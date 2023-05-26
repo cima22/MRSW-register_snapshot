@@ -12,4 +12,4 @@ Project carried out by Cimador Gabriele, Gunter Kambiz, Ionescu Serban.
 
 ## License
 
-Repository licensed with the MIT license. See the [LICENSE](LICENSE) for rights and limitations..
+Repository licensed with the MIT license. See the [LICENSE](LICENSE) for rights and limitations.
