@@ -1,12 +1,20 @@
 CC=gcc
+CXX=g++
 CFLAGS=-Wall -Wextra -std=c11
 
-all: SRSW-AtomicRegister run
+.PHONY: all clean run
+
+all: SRSW-AtomicRegister ThreadTestingRegular
 
 SRSW-AtomicRegister: SRSW-AtomicRegister.c
-	$(CC) $(CFLAGS) -o SRSW-AtomicRegister SRSW-AtomicRegister.c
+	$(CC) $(CFLAGS) -o $@ $<
 
-run:
+ThreadTestingRegular: ThreadTestingRegular.cpp
+	$(CXX) -o $@ $<
+
+run: SRSW-AtomicRegister ThreadTestingRegular
 	./SRSW-AtomicRegister
+	./ThreadTestingRegular
+
 clean:
-	rm SRSW-AtomicRegister
+	rm -f SRSW-AtomicRegister ThreadTestingRegular
