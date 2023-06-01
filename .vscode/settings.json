@@ -59,6 +59,9 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "semaphore": "cpp",
-        "future": "cpp"
-    }
+        "future": "cpp",
+        "time.h": "c",
+        "omp.h": "c"
+    },
+    "cmake.sourceDirectory": "/home/serb/Desktop/MRSW-register_snapshot/project"
 }

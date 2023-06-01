@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include "stampedValue.h"
+#include <omp.h>
 
 typedef struct {
     pthread_key_t lastStampKey;
@@ -60,3 +61,21 @@ void write(AtomicSRSWRegister* reg, void* v) {
     pthread_setspecific(reg->lastStampKey, &stamp);
 }
 
+AtomicSRSWRegister* maxSRSWAtomic(AtomicSRSWRegister* x, AtomicSRSWRegister* y) {
+    if (x == NULL) {
+        fprintf(stderr,"First stamped value was null.");
+        return NULL;
+    }
+    if (y == NULL) {
+        fprintf(stderr,"Second stamped value was null.");
+        return NULL;
+    }
+    if (x->r_value->stamp >= y->r_value->stamp)
+        return x;
+    return y;
+    
+}
+
+void destroyAtomicSRSWRegister(AtomicSRSWRegister* reg){
+    freeStampedValue(reg->r_value);
+}
