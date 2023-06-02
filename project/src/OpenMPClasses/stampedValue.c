@@ -1,10 +1,11 @@
-#include <stdlib.h>
-#include <stdio.h>
+// #include <stdlib.h>
+// #include <stdio.h>
 
-typedef struct {
-    long stamp;
-    void* value;
-} StampedValue;
+// typedef struct {
+//     long stamp;
+//     void* value;
+// } StampedValue;
+#include "stampedValue.h"
 
 int createStampedValue(StampedValue* stampedValue, long stamp, void* value) {
     if (stampedValue == NULL) {
@@ -29,7 +30,7 @@ int initStampedValue(StampedValue* stampedValue, void* init) {
 
 // Maximum of two StampedValues based on timestamp,
 // goal is to use x only after the method call (should be modified)
-int max(StampedValue* x, StampedValue* y) {
+int isFirstBigger(StampedValue* x, StampedValue* y) {
     if (x == NULL) {
         fprintf(stderr,"First stamped value was null.");
         return EXIT_FAILURE;
@@ -39,10 +40,9 @@ int max(StampedValue* x, StampedValue* y) {
         return EXIT_FAILURE;
     }
     if (x->stamp <= y->stamp) {
-        x->stamp = y->stamp;
-        x->value = y->value;
+        return 1;
     }
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int copyStampedValueSecondIntoFirst(StampedValue*x, StampedValue*y){
@@ -70,5 +70,21 @@ int freeStampedValue(StampedValue* stampedValue) {
     return EXIT_SUCCESS;
 }
 
+int duplicateStampedValue(StampedValue*duplicate, StampedValue* original) {
+    if (original == NULL) {
+        fprintf(stderr, "Original StampedValue was null.");
+        return EXIT_FAILURE;
+    }
+
+    if (duplicate == NULL) {
+        fprintf(stderr, "Memory allocation failed for duplicate StampedValue.");
+        return EXIT_FAILURE;
+    }
+
+    duplicate->stamp = original->stamp;
+    duplicate->value = original->value;
+
+    return EXIT_SUCCESS;
+}
 
 
