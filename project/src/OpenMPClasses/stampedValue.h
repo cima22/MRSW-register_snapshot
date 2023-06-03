@@ -6,11 +6,11 @@
 
 typedef struct {
     long stamp;
-    void* value;
+    int value;
 } StampedValue;
 
-int createStampedValue(StampedValue* stampedValue, long stamp, void* value);
-int initStampedValue(StampedValue* stampedValue, void* init);
+int createStampedValue(StampedValue* stampedValue, long stamp, int value);
+int initStampedValue(StampedValue* stampedValue, int init);
 int isFirstBigger(StampedValue* x, StampedValue* y);
 int copyStampedValueSecondIntoFirst(StampedValue* x, StampedValue* y);
 int freeStampedValue(StampedValue* stampedValue);

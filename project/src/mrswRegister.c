@@ -9,7 +9,7 @@
 typedef struct {
     pthread_key_t lastStamp;
     AtomicSRSWRegister*** a_table;
-    int sizeOfTable
+    int sizeOfTable;
 } AtomicMRSWRegister;
 
 void initThreadSpecificKeys(AtomicMRSWRegister* reg) {
