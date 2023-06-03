@@ -36,21 +36,28 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
 int collect(WFSnapshot* snapshot, StampedSnap** copy){
     *copy = calloc(snapshot->capacity, sizeof(StampedSnap));
     if(*copy == NULL){
-        fprintf(stderr, "Memory allocation failed: stamped snap table");
+        fprintf(stderr, "Memory allocation failed: copy array in collect()");
         return EXIT_FAILURE;
     }
     for (int j = 0; j < snapshot->capacity; j++) {
+        int* snap = calloc(snapshot->capacity,sizeof(int));
+        if(snap == NULL){
+            fprintf(stderr, "Memory allocation failed: snap of copy in collect()");
+            return EXIT_FAILURE;
+        }
+        memcpy(snap,snapshot->a_table[j].snap,snapshot->capacity*sizeof(int));
         (*copy)[j] = snapshot->a_table[j];
+        (*copy)[j].snap = snap;
     }
     return EXIT_SUCCESS;
 }
 
 int update(WFSnapshot* snapshot, int value) {
     int me = omp_get_thread_num();
-    snapshot->a_table[me].stamp++;
     if(scan(snapshot,snapshot->a_table[me].snap) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
+    snapshot->a_table[me].stamp++;
     snapshot->a_table[me].value = value;
     return EXIT_SUCCESS;
 }
@@ -65,26 +72,40 @@ int scan(WFSnapshot* snapshot, int* snap) {
         return EXIT_FAILURE;
     }
     while (true) {
+        bool continueWhile = false;
         if(collect(snapshot,&newCopy) == EXIT_FAILURE){
             return EXIT_FAILURE;
         }
         for (int j = 0; j < snapshot->capacity; j++) {
             if (oldCopy[j].stamp != newCopy[j].stamp) {
                 if (moved[j]) {
-                    memcpy(snap,oldCopy->snap,snapshot->capacity*sizeof(int));
+                    memcpy(snap,oldCopy[j].snap,snapshot->capacity * sizeof(int));
+                    for (int i = 0; i < snapshot->capacity; ++i) {
+                        free(oldCopy[i].snap);
+                        free(newCopy[i].snap);
+                    }
                     free(oldCopy);
                     free(newCopy);
                     return EXIT_SUCCESS;
                 } else {
                     moved[j] = true;
+                    for (int i = 0; i < snapshot->capacity; ++i) {
+                        free(oldCopy[i].snap);
+                    }
                     free(oldCopy);
                     oldCopy = newCopy;
-                    continue;
+                    continueWhile = true;
                 }
             }
         }
+        if(continueWhile)
+            continue;
         for (int j = 0; j < snapshot->capacity; j++) {
             snap[j] = newCopy[j].value;
+        }
+        for (int i = 0; i < snapshot->capacity; ++i) {
+            free(oldCopy[i].snap);
+            free(newCopy[i].snap);
         }
         free(oldCopy);
         free(newCopy);
