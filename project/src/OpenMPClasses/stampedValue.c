@@ -80,7 +80,12 @@ int duplicateStampedValue(StampedValue*duplicate, StampedValue* original) {
         fprintf(stderr, "Memory allocation failed for duplicate StampedValue.");
         return EXIT_FAILURE;
     }
-
+    if(original->value == NULL){
+        fprintf(stderr,"original at fault value is null");
+    }
+        if(duplicate->value == NULL){
+        fprintf(stderr,"duplicate at fault value is null");
+    }
     duplicate->stamp = original->stamp;
     duplicate->value = original->value;
 

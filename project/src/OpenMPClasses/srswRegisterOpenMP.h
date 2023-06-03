@@ -17,6 +17,7 @@ typedef struct {
 void createAtomicSRSWRegister(AtomicSRSWRegister* reg,void* init);
 void* readSRSW(AtomicSRSWRegister* reg);
 void writeSRSW(AtomicSRSWRegister* reg, void* v);
-int copyAtomicSRSWRegisterOpenMP(AtomicSRSWRegister* dest, const AtomicSRSWRegister* src);
+int copyAtomicSRSWRegisterOpenMP(AtomicSRSWRegister* dest, AtomicSRSWRegister* src);
+void TestingSRSWRegisterMemoryAllocated(AtomicSRSWRegister* reg);
 
 #endif  // SRSW_REGISTER_OPENMP_H

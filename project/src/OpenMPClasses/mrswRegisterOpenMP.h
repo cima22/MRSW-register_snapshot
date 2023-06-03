@@ -19,5 +19,6 @@ void createAtomicMRSWRegister(AtomicMRSWRegister* reg, void* init,  int readers)
 void* readMRSW(AtomicMRSWRegister* reg);
 void writeMRSW(AtomicMRSWRegister* reg, void* v);
 void destroyAtomicMRSWRegister(AtomicMRSWRegister* reg);
+void TestingMRSWRegisterMemoryAllocated(AtomicMRSWRegister* reg);
 
 #endif  // MRSW_REGISTER_H
