@@ -16,11 +16,10 @@ typedef struct {
     int capacity;
 } WFSnapshot;
 
-WFSnapshot* createWFSnapshot(int capacity, int init);
-
-StampedSnap* collect(WFSnapshot* snapshot);
+int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init);
+int collect(WFSnapshot* snapshot, StampedSnap** copy);
 void update(WFSnapshot* snapshot, int value);
-int* scan(WFSnapshot* snapshot);
-void deleteWFSnapshot(WFSnapshot* snapshot);
+int scan(WFSnapshot* snapshot,int* snap);
+void freeWFSnapshot(WFSnapshot* snapshot);
 
 #endif //AMP_TESTS_WFSNAPSHOT_H

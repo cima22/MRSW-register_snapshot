@@ -3,54 +3,75 @@
 //
 
 #include "WFSnapshot.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "omp.h"
 
-WFSnapshot* createWFSnapshot(int capacity, int init) {
-    WFSnapshot* snapshot = (WFSnapshot*) malloc(sizeof(WFSnapshot));
-    snapshot->a_table = calloc(capaity,sizeof(StampedSnap));
+int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
+    if(snapshot==NULL) {
+        fprintf(stderr, "Snapshot to create is null");
+        return EXIT_FAILURE;
+    }
+    snapshot->a_table = calloc(capacity, sizeof(StampedSnap));
+    if(snapshot==NULL) {
+        fprintf(stderr, "Memory allocation failed: stamped snap table");
+        return EXIT_FAILURE;
+    }
     snapshot->capacity = capacity;
-
     for (int i = 0; i < capacity; i++) {
         snapshot->a_table[i].stamp = 0;
         snapshot->a_table[i].value = init;
-        snapshot->a_table[i].snap = NULL;
+        snapshot->a_table[i].snap = calloc(capacity,sizeof(int));
+        if(snapshot->a_table[i].snap == NULL){
+            fprintf(stderr, "Memory allocation failed: snap in a_table");
+            return EXIT_FAILURE;
+        }
     }
-    return snapshot;
+    return EXIT_SUCCESS;
 }
 
-StampedSnap* collect(WFSnapshot* snapshot) {
-    StampedSnap* copy = calloc(snapshot->capacity,sizeof(StampedSnap));
-    for (int j = 0; j < snapshot->capacity; j++) {
-        copy[j] = snapshot->a_table[j];
+int collect(WFSnapshot* snapshot, StampedSnap** copy){
+    *copy = calloc(snapshot->capacity, sizeof(StampedSnap));
+    if(*copy == NULL){
+        fprintf(stderr, "Memory allocation failed: stamped snap table");
+        return EXIT_FAILURE;
     }
-    return copy;
+    for (int j = 0; j < snapshot->capacity; j++) {
+        *copy[j] = snapshot->a_table[j];
+    }
+    return EXIT_SUCCESS;
 }
 
 void update(WFSnapshot* snapshot, int value) {
+    printf("update\n");
     int me = omp_get_thread_num();
     snapshot->a_table[me].stamp++;
-    snapshot->a_table[me].scan = scan(snapshot);
+    scan(snapshot,snapshot->a_table[me].snap);
     snapshot->a_table[me].value = value;
 }
 
-int* scan(WFSnapshot* snapshot) {
+int scan(WFSnapshot* snapshot, int* snap) {
     StampedSnap* oldCopy;
     StampedSnap* newCopy;
     bool moved[snapshot->capacity];
-    oldCopy = collect(snapshot);
+    memset(moved,false,snapshot->capacity);
+
+    if(collect(snapshot,&oldCopy) == EXIT_FAILURE){
+        return EXIT_FAILURE;
+    }
     while (true) {
-        newCopy = collect(snapshot);
+        if(collect(snapshot,&newCopy) == EXIT_FAILURE){
+            return EXIT_FAILURE;
+        }
         for (int j = 0; j < snapshot->capacity; j++) {
             if (oldCopy[j].stamp != newCopy[j].stamp) {
                 if (moved[j]) {
-                    int* result = (int*) malloc(sizeof(int) * snapshot->capacity);
-                    memcpy(result,oldCopy->snap,snapshot->capacity);
+                    memcpy(snap,oldCopy->snap,snapshot->capacity);
                     free(oldCopy);
                     free(newCopy);
-                    return result;
+                    return EXIT_SUCCESS;
                 } else {
                     moved[j] = true;
                     free(oldCopy);
@@ -59,20 +80,18 @@ int* scan(WFSnapshot* snapshot) {
                 }
             }
         }
-	int* result = calloc(snapshot->capacity,sizeof(int));
         for (int j = 0; j < snapshot->capacity; j++) {
-            result[j] = newCopy[j].value;
+            snap[j] = newCopy[j].value;
         }
         free(oldCopy);
         free(newCopy);
-        return result;
+        return EXIT_SUCCESS;
     }
 }
 
-void deleteWFSnapshot(WFSnapshot* snapshot) {
+void freeWFSnapshot(WFSnapshot* snapshot) {
     for (int i = 0; i < snapshot->capacity; i++) {
-        free(snapshot->a_table[i].snap);
+       free(snapshot->a_table[i].snap);
     }
-   // free(snapshot->a_table);
-    free(snapshot);
+    free(snapshot->a_table);
 }
