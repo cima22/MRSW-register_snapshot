@@ -29,7 +29,6 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
             return EXIT_FAILURE;
         }
         snapshot->a_table[i].snap = snap;
-
     }
     return EXIT_SUCCESS;
 }
@@ -60,7 +59,7 @@ int scan(WFSnapshot* snapshot, int* snap) {
     StampedSnap* oldCopy;
     StampedSnap* newCopy;
     bool moved[snapshot->capacity];
-    memset(moved,false,snapshot->capacity);
+    memset(moved,false,snapshot->capacity*sizeof(bool));
 
     if(collect(snapshot,&oldCopy) == EXIT_FAILURE){
         return EXIT_FAILURE;
@@ -72,7 +71,7 @@ int scan(WFSnapshot* snapshot, int* snap) {
         for (int j = 0; j < snapshot->capacity; j++) {
             if (oldCopy[j].stamp != newCopy[j].stamp) {
                 if (moved[j]) {
-                    memcpy(snap,oldCopy->snap,snapshot->capacity);
+                    memcpy(snap,oldCopy->snap,snapshot->capacity*sizeof(int));
                     free(oldCopy);
                     free(newCopy);
                     return EXIT_SUCCESS;
