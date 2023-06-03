@@ -10,7 +10,7 @@
 
 WFSnapshot* createWFSnapshot(int capacity, int init) {
     WFSnapshot* snapshot = (WFSnapshot*) malloc(sizeof(WFSnapshot));
-    snapshot->a_table = (StampedSnap*)malloc(capacity * sizeof(StampedSnap));
+    snapshot->a_table = calloc(capaity,sizeof(StampedSnap));
     snapshot->capacity = capacity;
 
     for (int i = 0; i < capacity; i++) {
@@ -18,12 +18,11 @@ WFSnapshot* createWFSnapshot(int capacity, int init) {
         snapshot->a_table[i].value = init;
         snapshot->a_table[i].snap = NULL;
     }
-
     return snapshot;
 }
 
 StampedSnap* collect(WFSnapshot* snapshot) {
-    StampedSnap* copy = (StampedSnap*)malloc(snapshot->capacity * sizeof(StampedSnap));
+    StampedSnap* copy = calloc(snapshot->capacity,sizeof(StampedSnap));
     for (int j = 0; j < snapshot->capacity; j++) {
         copy[j] = snapshot->a_table[j];
     }
@@ -32,13 +31,9 @@ StampedSnap* collect(WFSnapshot* snapshot) {
 
 void update(WFSnapshot* snapshot, int value) {
     int me = omp_get_thread_num();
-    int* snap = scan(snapshot);
-    StampedSnap oldValue = snapshot->a_table[me];
-    StampedSnap newValue;
-    newValue.stamp = oldValue.stamp + 1;
-    newValue.value = value;
-    newValue.snap = snap;
-    snapshot->a_table[me] = newValue;
+    snapshot->a_table[me].stamp++;
+    snapshot->a_table[me].scan = scan(snapshot);
+    snapshot->a_table[me].value = value;
 }
 
 int* scan(WFSnapshot* snapshot) {
@@ -64,8 +59,7 @@ int* scan(WFSnapshot* snapshot) {
                 }
             }
         }
-
-        int* result = (int*)malloc(snapshot->capacity * sizeof(int));
+	int* result = calloc(snapshot->capacity,sizeof(int));
         for (int j = 0; j < snapshot->capacity; j++) {
             result[j] = newCopy[j].value;
         }
