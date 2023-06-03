@@ -2,7 +2,7 @@
 
 
 // create for a thread allocate memory
-void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread,int init, StampedValue* r_value) {
+void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread, StampedValue* r_value) {
     curentThread->lastStamp = 0;
     curentThread->lastRead = (StampedValue*)calloc(1, sizeof(StampedValue*));
 

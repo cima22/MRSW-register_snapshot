@@ -15,7 +15,7 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
         return EXIT_FAILURE;
     }
     snapshot->a_table = calloc(capacity, sizeof(StampedSnap));
-    if(snapshot==NULL) {
+    if(snapshot->a_table ==NULL) {
         fprintf(stderr, "Memory allocation failed: stamped snap table");
         return EXIT_FAILURE;
     }
@@ -23,11 +23,13 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
     for (int i = 0; i < capacity; i++) {
         snapshot->a_table[i].stamp = 0;
         snapshot->a_table[i].value = init;
-        snapshot->a_table[i].snap = calloc(capacity,sizeof(int));
-        if(snapshot->a_table[i].snap == NULL){
+        int * snap = calloc(capacity,sizeof(int));
+        if(snap == NULL){
             fprintf(stderr, "Memory allocation failed: snap in a_table");
             return EXIT_FAILURE;
         }
+        snapshot->a_table[i].snap = snap;
+
     }
     return EXIT_SUCCESS;
 }

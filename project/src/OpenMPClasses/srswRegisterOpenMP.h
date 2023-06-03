@@ -19,9 +19,9 @@ typedef struct {
     StampedValue* lastRead;
 } ThreadSpecificSRSW;
 
-void createAtomicSRSWRegister(AtomicSRSWRegister* reg,int init);
+void createAtomicSRSWRegister(AtomicSRSWRegister* reg, int init);
 int readSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread);
 void writeSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread, int v);
-void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread,int init, StampedValue* r_value);
+void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread, StampedValue* r_value);
 
 #endif  // SRSW_REGISTER_OPENMP_H
