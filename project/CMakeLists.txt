@@ -3,4 +3,10 @@ project(project C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(project src/library.c src/mrswRegister.c src/stampedValue.c src/stampedValue.h src/srswRegister.c)
+add_executable(project
+        src/library.c
+        src/mrswRegister.c
+        src/stampedValue.c src/stampedValue.h
+        src/srswRegister.c
+        src/srswRegisterOpenMP.c src/srswRegisterOpenMP.
+        src/WFSnapshot.c src/WFSnapshot.h)

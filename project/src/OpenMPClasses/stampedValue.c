@@ -7,7 +7,7 @@
 // } StampedValue;
 #include "stampedValue.h"
 
-int createStampedValue(StampedValue* stampedValue, long stamp, void* value) {
+int createStampedValue(StampedValue* stampedValue, long stamp, int value) {
     if (stampedValue == NULL) {
         fprintf(stderr,"Stamped value was null.");
         return EXIT_FAILURE;
@@ -17,7 +17,7 @@ int createStampedValue(StampedValue* stampedValue, long stamp, void* value) {
     return EXIT_SUCCESS;
 }
 
-int initStampedValue(StampedValue* stampedValue, void* init) {
+int initStampedValue(StampedValue* stampedValue, int init) {
     if (stampedValue == NULL) {
         fprintf(stdout,"Stamped value was null.");
         return EXIT_FAILURE;
@@ -33,11 +33,11 @@ int initStampedValue(StampedValue* stampedValue, void* init) {
 int isFirstBigger(StampedValue* x, StampedValue* y) {
     if (x == NULL) {
         fprintf(stderr,"First stamped value was null.");
-        return EXIT_FAILURE;
+        return -1;
     }
     if (y == NULL) {
         fprintf(stderr,"Second stamped value was null.");
-        return EXIT_FAILURE;
+        return -1;
     }
     if (x->stamp <= y->stamp) {
         return 1;
@@ -80,12 +80,7 @@ int duplicateStampedValue(StampedValue*duplicate, StampedValue* original) {
         fprintf(stderr, "Memory allocation failed for duplicate StampedValue.");
         return EXIT_FAILURE;
     }
-    if(original->value == NULL){
-        fprintf(stderr,"original at fault value is null");
-    }
-        if(duplicate->value == NULL){
-        fprintf(stderr,"duplicate at fault value is null");
-    }
+
     duplicate->stamp = original->stamp;
     duplicate->value = original->value;
 
