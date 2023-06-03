@@ -10,12 +10,12 @@
 #include "omp.h"
 
 int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
-    if(snapshot==NULL) {
+    if(snapshot == NULL) {
         fprintf(stderr, "Snapshot to create is null");
         return EXIT_FAILURE;
     }
     snapshot->a_table = calloc(capacity, sizeof(StampedSnap));
-    if(snapshot->a_table ==NULL) {
+    if(snapshot->a_table == NULL) {
         fprintf(stderr, "Memory allocation failed: stamped snap table");
         return EXIT_FAILURE;
     }
@@ -41,7 +41,7 @@ int collect(WFSnapshot* snapshot, StampedSnap** copy){
         return EXIT_FAILURE;
     }
     for (int j = 0; j < snapshot->capacity; j++) {
-        *copy[j] = snapshot->a_table[j];
+        (*copy)[j] = snapshot->a_table[j];
     }
     return EXIT_SUCCESS;
 }
