@@ -46,3 +46,45 @@ void writeMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp,int v) {
         createStampedValue(reg->a_table[i][i]->r_value, regSRSW->r_value->stamp,regSRSW->r_value->value);
     }
 }
+
+int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
+
+    if(reg == NULL){
+        fprintf(stderr, "MRSW register was NULL!!\n");
+        return EXIT_FAILURE;
+    }
+    
+    if(returnedReg == NULL) {
+        fprintf(stderr, "Returned register was NULL!!\n");
+        return EXIT_FAILURE;
+    }
+
+    returnedReg->r_value = (StampedValue*)calloc(1,sizeof(StampedValue));
+    if(returnedReg->r_value == NULL) {
+        fprintf(stderr, "Memory allocation for stamped value failed!!\n");
+        return EXIT_FAILURE;
+    }
+    initStampedValue(returnedReg->r_value,0);
+    
+    for(int i = 0; i < reg->sizeOfTable; i++) {
+        if(reg->a_table[i] == NULL) {
+            fprintf(stderr, "Row %d of MRSW table was NULL!!\n", i);
+            return EXIT_FAILURE;
+        }
+        for(int j = 0; j < reg->sizeOfTable; j++) {
+            if(reg->a_table[i][j] == NULL) {
+                fprintf(stderr, "Element at (%d, %d) of MRSW table was NULL!!\n", i, j);
+                return EXIT_FAILURE;
+            }
+            if(reg->a_table[i][j]->r_value == NULL) {
+                fprintf(stderr, "Stamped value at (%d, %d) of MRSW table was NULL!!\n", i, j);
+                return EXIT_FAILURE;
+            }
+            if(reg->a_table[i][j]->r_value->stamp > returnedReg->r_value->stamp){
+                returnedReg->r_value->stamp = reg->a_table[i][j]->r_value->stamp;
+                returnedReg->r_value->value = reg->a_table[i][j]->r_value->value;
+            }
+        }
+    }
+    return EXIT_SUCCESS;
+}
