@@ -44,12 +44,14 @@ int collect(WFSnapshot* snapshot, StampedSnap** copy){
     return EXIT_SUCCESS;
 }
 
-void update(WFSnapshot* snapshot, int value) {
-    printf("update\n");
+int update(WFSnapshot* snapshot, int value) {
     int me = omp_get_thread_num();
     snapshot->a_table[me].stamp++;
-    scan(snapshot,snapshot->a_table[me].snap);
+    if(scan(snapshot,snapshot->a_table[me].snap) == EXIT_FAILURE){
+        return EXIT_FAILURE;
+    }
     snapshot->a_table[me].value = value;
+    return EXIT_SUCCESS;
 }
 
 int scan(WFSnapshot* snapshot, int* snap) {

@@ -18,7 +18,7 @@ typedef struct {
 
 int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init);
 int collect(WFSnapshot* snapshot, StampedSnap** copy);
-void update(WFSnapshot* snapshot, int value);
+int update(WFSnapshot* snapshot, int value);
 int scan(WFSnapshot* snapshot,int* snap);
 void freeWFSnapshot(WFSnapshot* snapshot);
 
