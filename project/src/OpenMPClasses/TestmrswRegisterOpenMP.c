@@ -1,40 +1,36 @@
 #include "mrswRegisterOpenMP.h"
-#define NUM_THREADS 2
-#define NUM_READERS 1
+#define NUM_THREADS 4
+#define NUM_READERS 3
 #define NUM_WRITES 10
 
 int main() {
-    AtomicMRSWRegister* reg = (AtomicMRSWRegister*)malloc(sizeof(AtomicMRSWRegister));
+    AtomicMRSWRegister* reg = (AtomicMRSWRegister*)calloc(1, sizeof(AtomicMRSWRegister));
     int init = 0;
-                printf("got here");
-    createAtomicMRSWRegister(reg, &init, NUM_READERS);
-    // int sizeOfTable = reg.sizeOfTable;
-    // for (int i = 0; i < (int) sizeOfTable; i++) {
-    //     // testing, the lastRead[] is NULL
-    //             for(int j = 0; j < NUM_READERS; j++){
-    //             if(reg->a_table[i][me]->lastRead[j] == NULL)
-    //                 printf("\n\nriginalplmmm\n\n");}
-
+    
+    createAtomicMRSWRegister(reg, init, NUM_READERS);
     #pragma omp parallel num_threads(NUM_THREADS)
-    {
+    {   long ThreadLastStamp = 0;
         int threadNum = omp_get_thread_num();
-        if (threadNum == 1) { // Let's say thread 0 is our writer
+        if (threadNum == NUM_THREADS - 1) { // Last thread has to be the writer in this code
             for (int i = 0; i < NUM_WRITES; ++i) {
-                int* new_value = malloc(sizeof(int));
-                *new_value = i; // new value to write
-                writeMRSW(reg, new_value);
-
+                writeMRSW(reg,ThreadLastStamp, i);
+                printf("Thread %d wrote value %d\n", threadNum, i);
+                struct timespec ts;
+                ts.tv_sec = 0;
+                ts.tv_nsec = 10 * 1000 * 1000;  // 100,00 microseconds = 10 millisecond
+                nanosleep(&ts, NULL);
             }
         } else { // Other threads are readers
-                                TestingMRSWRegisterMemoryAllocated(reg);
             for (int i = 0; i < NUM_WRITES; ++i) {
-                void* value = readMRSW(reg);
-                printf("Thread %d read value %d\n", threadNum, *(int*)value);
+                int value = readMRSW(reg,ThreadLastStamp);
+                printf("Thread %d read value %d\n", threadNum, value);
+                struct timespec ts;
+                ts.tv_sec = 0;
+                ts.tv_nsec = 10 * 1000 * 1000;  // 100,00 microseconds = 10 millisecond
+                nanosleep(&ts, NULL);
             }
         }
     }
-
-    // destroyAtomicMRSWRegister(&reg);
 
     return 0;
 }

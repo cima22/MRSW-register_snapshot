@@ -7,7 +7,7 @@
 // } StampedValue;
 #include "stampedValue.h"
 
-int createStampedValue(StampedValue* stampedValue, long stamp, int value) {
+int createStampedValue(StampedValue* stampedValue, long stamp,int value) {
     if (stampedValue == NULL) {
         fprintf(stderr,"Stamped value was null.");
         return EXIT_FAILURE;
@@ -33,11 +33,11 @@ int initStampedValue(StampedValue* stampedValue, int init) {
 int isFirstBigger(StampedValue* x, StampedValue* y) {
     if (x == NULL) {
         fprintf(stderr,"First stamped value was null.");
-        return -1;
+        return EXIT_FAILURE;
     }
     if (y == NULL) {
         fprintf(stderr,"Second stamped value was null.");
-        return -1;
+        return EXIT_FAILURE;
     }
     if (x->stamp <= y->stamp) {
         return 1;
@@ -80,11 +80,9 @@ int duplicateStampedValue(StampedValue*duplicate, StampedValue* original) {
         fprintf(stderr, "Memory allocation failed for duplicate StampedValue.");
         return EXIT_FAILURE;
     }
-
     duplicate->stamp = original->stamp;
     duplicate->value = original->value;
 
     return EXIT_SUCCESS;
 }
-
 

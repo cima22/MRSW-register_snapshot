@@ -10,15 +10,12 @@
 #include <omp.h>
 
 typedef struct {
-    long* lastStamp;
     AtomicSRSWRegister*** a_table;
     int sizeOfTable;
 } AtomicMRSWRegister;
 
-void createAtomicMRSWRegister(AtomicMRSWRegister* reg, void* init,  int readers);
-void* readMRSW(AtomicMRSWRegister* reg);
-void writeMRSW(AtomicMRSWRegister* reg, void* v);
-void freeAtomicMRSWRegister(AtomicMRSWRegister* reg);
-void TestingMRSWRegisterMemoryAllocated(AtomicMRSWRegister* reg);
+void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers);
+int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp);
+void writeMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp,int v);
 
 #endif  // MRSW_REGISTER_H

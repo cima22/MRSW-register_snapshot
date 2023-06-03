@@ -8,16 +8,20 @@
 #include <omp.h>
 #include <string.h>
 
+// the actual register
 typedef struct {
-    long* lastStamp;
-    StampedValue** lastRead;
     StampedValue* r_value;
 } AtomicSRSWRegister;
 
-void createAtomicSRSWRegister(AtomicSRSWRegister* reg,void* init);
-void* readSRSW(AtomicSRSWRegister* reg);
-void writeSRSW(AtomicSRSWRegister* reg, void* v);
-int copyAtomicSRSWRegisterOpenMP(AtomicSRSWRegister* dest, AtomicSRSWRegister* src);
-void TestingSRSWRegisterMemoryAllocated(AtomicSRSWRegister* reg);
+// the thread specific data
+typedef struct {
+    long lastStamp;
+    StampedValue* lastRead;
+} ThreadSpecificSRSW;
+
+void createAtomicSRSWRegister(AtomicSRSWRegister* reg,int init);
+int readSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread);
+void writeSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread, int v);
+void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread,int init, StampedValue* r_value);
 
 #endif  // SRSW_REGISTER_OPENMP_H
