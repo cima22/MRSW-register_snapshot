@@ -15,8 +15,8 @@ typedef struct {
 } AtomicMRSWRegister;
 
 void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers);
-int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp);
-void writeMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp,int v);
+int readMRSW(AtomicMRSWRegister* reg);
+void writeMRSW(AtomicMRSWRegister* reg, long *ThreadLastStamp,int v);
 void CopyContentMRSWRegister(AtomicMRSWRegister* x, AtomicMRSWRegister* y);
 int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg);
 

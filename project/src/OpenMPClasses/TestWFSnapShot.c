@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #ifndef NUM_THREADS
-#define NUM_THREADS 2
+#define NUM_THREADS 5
 #endif
 
 int main() {
@@ -20,7 +20,9 @@ int main() {
 
 #pragma omp parallel default(none) shared(snapshot,snap) num_threads(NUM_THREADS)
     {
-        update(&snapshot,NUM_THREADS);
+        long* threadLastStamp = (long*)calloc(NUM_THREADS,sizeof(long));
+        int thr = omp_get_thread_num();
+        update(&snapshot,thr + 4, threadLastStamp);
     }
 
     scan(&snapshot,snap);

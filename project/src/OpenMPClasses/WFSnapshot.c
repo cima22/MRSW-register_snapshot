@@ -50,13 +50,14 @@ int collect(WFSnapshot* snapshot, ModifiedMRMW** copy){
     return EXIT_SUCCESS;
 }
 
-int update(WFSnapshot* snapshot, int value) {
+int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp) {
     int me = omp_get_thread_num();
+    // long ThreadLastStamp = (long)me;
     if(scan(snapshot,snapshot->a_table[me].snap) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
     // printf("\nthe value to write is %d:",value);
-    writeMRSW(&(snapshot->a_table[me].mrswReg),me,value);
+    writeMRSW(&(snapshot->a_table[me].mrswReg), &(ThreadLastStamp[me]),value);
     AtomicSRSWRegister* old_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
     #pragma omp barrier
     MaxMRSW(&(snapshot->a_table[me].mrswReg), old_cpySRSW);

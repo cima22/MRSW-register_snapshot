@@ -30,7 +30,7 @@ typedef struct {
 
 int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init);
 int collect(WFSnapshot* snapshot, ModifiedMRMW** copy);
-int update(WFSnapshot* snapshot, int value);
+int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp);
 int scan(WFSnapshot* snapshot,int* snap);
 void freeWFSnapshot(WFSnapshot* snapshot);
 

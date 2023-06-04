@@ -13,7 +13,7 @@ void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers) {
 }
 
 
-int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp) {
+int readMRSW(AtomicMRSWRegister* reg) {
     int me = omp_get_thread_num();
 
     // Here I just copied the content of the SRSW register, did not create a pointer to the exact same location
@@ -36,15 +36,15 @@ int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp) {
     return value->r_value->value;
 }
 
-void writeMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp,int v) {
-    long stamp = ThreadLastStamp + 1;
-    ThreadLastStamp = stamp;
+void writeMRSW(AtomicMRSWRegister* reg, long* ThreadLastStamp,int v) {
+    long stamp = *ThreadLastStamp + 1;
+    *ThreadLastStamp = stamp;
     AtomicSRSWRegister* regSRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
     createAtomicSRSWRegister(regSRSW,v);
 
     int sizeOfTable = reg->sizeOfTable;
     for (int i = 0; i < sizeOfTable; i++) {
-        createStampedValue(reg->a_table[i][i].r_value, regSRSW->r_value->stamp,regSRSW->r_value->value);
+        createStampedValue(reg->a_table[i][i].r_value, stamp,regSRSW->r_value->value);
     }
 }
 
@@ -115,7 +115,7 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
             return EXIT_FAILURE;
         }
         for(int j = 0; j < reg->sizeOfTable; j++) {
-            printf("\nMaxMRSW: In the Max function: stamp, value are: %ld %d",reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
+            printf("\nMaxMRSW: In the Max function, position:%d %d ; stamp, value are: %ld %d",i,j,reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
             if(reg->a_table[i][j].r_value->stamp > returnedReg->r_value->stamp){
                 returnedReg->r_value->stamp = reg->a_table[i][j].r_value->stamp;
                 returnedReg->r_value->value = reg->a_table[i][j].r_value->value;

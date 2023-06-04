@@ -13,7 +13,7 @@ int main() {
         int threadNum = omp_get_thread_num();
         if (threadNum == NUM_THREADS - 1) { // Last thread has to be the writer in this code
             for (int i = 0; i < NUM_WRITES; ++i) {
-                writeMRSW(reg,ThreadLastStamp, i);
+                writeMRSW(reg,&ThreadLastStamp, i);
                 printf("Thread %d wrote value %d\n", threadNum, i);
                 struct timespec ts;
                 ts.tv_sec = 0;
@@ -22,7 +22,7 @@ int main() {
             }
         } else { // Other threads are readers
             for (int i = 0; i < NUM_WRITES; ++i) {
-                int value = readMRSW(reg,ThreadLastStamp);
+                int value = readMRSW(reg);
                 printf("Thread %d read value %d\n", threadNum, value);
                 struct timespec ts;
                 ts.tv_sec = 0;
