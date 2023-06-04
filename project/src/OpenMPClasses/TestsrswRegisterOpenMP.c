@@ -33,9 +33,8 @@ int main() {
     
     #pragma omp parallel num_threads(2)
     {
-        int init = 0;
         ThreadSpecificSRSW* ourThread = (ThreadSpecificSRSW*)calloc(1, sizeof(ThreadSpecificSRSW*));
-        createAtomicSRSWThreadSpecific(ourThread, init,reg->r_value);
+        createAtomicSRSWThreadSpecific(ourThread,reg->r_value);
         if (omp_get_thread_num() == 0) {
             reader(reg, ourThread);
         } else {

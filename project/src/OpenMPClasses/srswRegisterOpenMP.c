@@ -19,6 +19,33 @@ void createAtomicSRSWRegister(AtomicSRSWRegister* reg,int init) {
     }
 }
 
+void CopyContentSRSWRegister(AtomicSRSWRegister* x, AtomicSRSWRegister* y) {
+    // Check for null pointers
+    if (x == NULL || y == NULL) {
+        fprintf(stderr, "NULL pointer received in CopyContentSRSWRegister\n");
+        return;
+    }
+
+    // Check if r_value is properly initialized in y
+    if (y->r_value == NULL) {
+        fprintf(stderr, "r_value not initialized in y\n");
+        return;
+    }
+
+    // Check if x->r_value has been allocated memory or not
+    if (x->r_value == NULL) {
+        x->r_value = (StampedValue*)calloc(1, sizeof(StampedValue));
+        if (x->r_value == NULL) {
+            fprintf(stderr, "Memory allocation for r_value in x failed\n");
+            return;
+        }
+    }
+    
+    // Copy y's r_value to x's r_value
+    createStampedValue(x->r_value, y->r_value->stamp, y->r_value->value);
+}
+
+
 // the reading takes as parameter the register and the thread that is reading from that register
 int readSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread) {
     StampedValue* value = (StampedValue*)calloc(1, sizeof(StampedValue));

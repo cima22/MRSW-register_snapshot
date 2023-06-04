@@ -23,5 +23,6 @@ void createAtomicSRSWRegister(AtomicSRSWRegister* reg, int init);
 int readSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread);
 void writeSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread, int v);
 void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread, StampedValue* r_value);
+void CopyContentSRSWRegister(AtomicSRSWRegister* x, AtomicSRSWRegister* y);
 
 #endif  // SRSW_REGISTER_OPENMP_H
