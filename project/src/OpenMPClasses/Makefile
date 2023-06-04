@@ -7,8 +7,9 @@ CFLAGS  = -g -Wall -fopenmp
 # the build target executables
 TARGETSRSW = TestsrswRegisterOpenMP
 TARGETMRSW = TestmrswRegisterOpenMP
+TARGETWFS = TestWFSnapShot
 
-all: $(TARGETSRSW) $(TARGETMRSW)
+all: $(TARGETSRSW) $(TARGETMRSW) $(TARGETWFS)
 
 stampedValue.o: stampedValue.c stampedValue.h
 	$(CC) $(CFLAGS) -c stampedValue.c
@@ -25,5 +26,11 @@ mrswRegisterOpenMP.o: mrswRegisterOpenMP.c mrswRegisterOpenMP.h srswRegisterOpen
 $(TARGETMRSW): TestmrswRegisterOpenMP.c mrswRegisterOpenMP.o srswRegisterOpenMP.o stampedValue.o
 	$(CC) $(CFLAGS) -o $(TARGETMRSW) TestmrswRegisterOpenMP.c mrswRegisterOpenMP.o srswRegisterOpenMP.o stampedValue.o
 
+WFSnapshot.o: WFSnapshot.c WFSnapshot.h srswRegisterOpenMP.o mrswRegisterOpenMP.o
+	$(CC) $(CFLAGS) -c WFSnapshot.c
+
+$(TARGETWFS): TestWFSnapShot.c WFSnapshot.o srswRegisterOpenMP.o mrswRegisterOpenMP.o stampedValue.o
+	$(CC) $(CFLAGS) -o $(TARGETWFS) TestWFSnapShot.c WFSnapshot.o srswRegisterOpenMP.o mrswRegisterOpenMP.o stampedValue.o
+
 clean:
-	$(RM) $(TARGETSRSW) $(TARGETMRSW) *.o *~
+	$(RM) $(TARGETSRSW) $(TARGETMRSW) $(TARGETWFS) *.o *~
