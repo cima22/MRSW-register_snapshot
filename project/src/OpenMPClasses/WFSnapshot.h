@@ -21,15 +21,15 @@
 typedef struct {
     AtomicMRSWRegister mrswReg;
     int* snap;
-} ModifiedMRMW;
+} ModifiedMRSW;
 
 typedef struct {
-    ModifiedMRMW* a_table;
+    ModifiedMRSW* a_table;
     int capacity;
 } WFSnapshot;
 
 int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init);
-int collect(WFSnapshot* snapshot, ModifiedMRMW** copy);
+int collect(WFSnapshot* snapshot, ModifiedMRSW** copy);
 int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp);
 int scan(WFSnapshot* snapshot,int* snap);
 void freeWFSnapshot(WFSnapshot* snapshot);

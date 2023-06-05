@@ -11,7 +11,7 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
         return EXIT_FAILURE;
     }
 
-    snapshot->a_table = (ModifiedMRMW*)calloc(capacity, sizeof(ModifiedMRMW));
+    snapshot->a_table = (ModifiedMRSW*)calloc(capacity, sizeof(ModifiedMRSW));
     if(snapshot->a_table == NULL) {
         fprintf(stderr, "Memory allocation failed: stamped snap table");
         return EXIT_FAILURE;
@@ -30,8 +30,8 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
     return EXIT_SUCCESS;
 }
 
-int collect(WFSnapshot* snapshot, ModifiedMRMW** copy){
-    *copy = calloc(snapshot->capacity, sizeof(ModifiedMRMW));
+int collect(WFSnapshot* snapshot, ModifiedMRSW** copy){
+    *copy = calloc(snapshot->capacity, sizeof(ModifiedMRSW));
     if(*copy == NULL){
         fprintf(stderr, "Memory allocation failed: copy array in collect()");
         return EXIT_FAILURE;
@@ -44,7 +44,7 @@ int collect(WFSnapshot* snapshot, ModifiedMRMW** copy){
         }
         memcpy(snap,snapshot->a_table[j].snap,snapshot->capacity*sizeof(int));
         // (*copy)[j] = snapshot->a_table[j];
-        // (*copy)[j].snap = snap;
+        (*copy)[j].snap = snap;
         CopyContentMRSWRegister(&((*copy)[j].mrswReg), &(snapshot->a_table[j].mrswReg));
     }
     return EXIT_SUCCESS;
@@ -59,7 +59,7 @@ int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp) {
     // printf("\nthe value to write is %d:",value);
     writeMRSW(&(snapshot->a_table[me].mrswReg), ThreadLastStamp,value);
     AtomicSRSWRegister* old_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
-    #pragma omp barrier
+    // #pragma omp barrier
     MaxMRSW(&(snapshot->a_table[me].mrswReg), old_cpySRSW);
     // printf("\n In update : old stamp %ld old value %d", old_cpySRSW->r_value->stamp, old_cpySRSW->r_value->value);
     // snapshot->a_table[me].stamp++;
@@ -68,14 +68,16 @@ int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp) {
 }
 
 int scan(WFSnapshot* snapshot, int* snap) {
-    ModifiedMRMW* oldCopy;
-    ModifiedMRMW* newCopy;
+    ModifiedMRSW* oldCopy;
+    ModifiedMRSW* newCopy;
     bool moved[snapshot->capacity];
     memset(moved,false,snapshot->capacity*sizeof(bool));
 
     if(collect(snapshot,&oldCopy) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
+    if(omp_get_thread_num() == 0)
+        sleep(3);
     while (true) {
         bool continueWhile = false;
         if(collect(snapshot,&newCopy) == EXIT_FAILURE){
@@ -104,6 +106,7 @@ int scan(WFSnapshot* snapshot, int* snap) {
                     //     free(oldCopy[i].snap);
                     // }
                     // free(oldCopy);
+                    sleep(3);
                     oldCopy = newCopy;
                     continueWhile = true;
                 }

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #ifndef NUM_THREADS
-#define NUM_THREADS 5
+#define NUM_THREADS 2
 #endif
 
 int main() {
@@ -18,14 +18,32 @@ int main() {
         return EXIT_FAILURE;
     }
 
+// #pragma omp parallel default(none) shared(snapshot,snap) num_threads(NUM_THREADS)
+//     {
+//         long threadLastStamp = 0;
+//         int thr = omp_get_thread_num();
+//         update(&snapshot,thr, &threadLastStamp);
+//         update(&snapshot,thr + 1, &threadLastStamp);
+//         // update(&snapshot,thr, &threadLastStamp);
+//         // update(&snapshot,thr, &threadLastStamp);
+//         // update(&snapshot,thr, &threadLastStamp);
+//     }
 #pragma omp parallel default(none) shared(snapshot,snap) num_threads(NUM_THREADS)
-    {
-        long threadLastStamp = 0;
-        int thr = omp_get_thread_num();
-        update(&snapshot,thr, &threadLastStamp);
+{
+    long threadLastStamp = 0;
+    int me = omp_get_thread_num();
+    if(me == 0) {
+        // update(&snapshot,12, &threadLastStamp);
+        scan(&snapshot,snap);
+        
+    } else{
+        sleep(1);
+        update(&snapshot,100, &threadLastStamp);
+        sleep(1);
+        update(&snapshot,12, &threadLastStamp);
     }
-
-    scan(&snapshot,snap);
+}
+    // scan(&snapshot,snap);
     for (int i = 0; i < NUM_THREADS; ++i) {
         printf("[%d] ",snap[i]);
     }

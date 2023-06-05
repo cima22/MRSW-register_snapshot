@@ -7,6 +7,7 @@
 #include "stampedValue.h"
 #include <omp.h>
 #include <string.h>
+#include <unistd.h>
 
 // the actual register
 typedef struct {
