@@ -115,7 +115,7 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
             return EXIT_FAILURE;
         }
         for(int j = 0; j < reg->sizeOfTable; j++) {
-            printf("\nMaxMRSW: In the Max function, position:%d %d ; stamp, value are: %ld %d",i,j,reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
+            // printf("\nMaxMRSW: In the Max function, position:%d %d ; stamp, value are: %ld %d",i,j,reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
             if(reg->a_table[i][j].r_value->stamp > returnedReg->r_value->stamp){
                 returnedReg->r_value->stamp = reg->a_table[i][j].r_value->stamp;
                 returnedReg->r_value->value = reg->a_table[i][j].r_value->value;

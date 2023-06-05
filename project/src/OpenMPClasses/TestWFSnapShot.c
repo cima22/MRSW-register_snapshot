@@ -20,9 +20,9 @@ int main() {
 
 #pragma omp parallel default(none) shared(snapshot,snap) num_threads(NUM_THREADS)
     {
-        long* threadLastStamp = (long*)calloc(NUM_THREADS,sizeof(long));
+        long threadLastStamp = 0;
         int thr = omp_get_thread_num();
-        update(&snapshot,thr + 4, threadLastStamp);
+        update(&snapshot,thr, &threadLastStamp);
     }
 
     scan(&snapshot,snap);

@@ -57,7 +57,7 @@ int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp) {
         return EXIT_FAILURE;
     }
     // printf("\nthe value to write is %d:",value);
-    writeMRSW(&(snapshot->a_table[me].mrswReg), &(ThreadLastStamp[me]),value);
+    writeMRSW(&(snapshot->a_table[me].mrswReg), ThreadLastStamp,value);
     AtomicSRSWRegister* old_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
     #pragma omp barrier
     MaxMRSW(&(snapshot->a_table[me].mrswReg), old_cpySRSW);
