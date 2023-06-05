@@ -41,6 +41,9 @@ int main() {
         update(&snapshot,100, &threadLastStamp);
         sleep(1);
         update(&snapshot,12, &threadLastStamp);
+        sleep(4);
+        update(&snapshot,35, &threadLastStamp);
+
     }
 }
     // scan(&snapshot,snap);
