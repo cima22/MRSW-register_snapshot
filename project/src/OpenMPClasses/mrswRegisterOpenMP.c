@@ -5,7 +5,6 @@ void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers) {
     for(int i = 0;i<readers;i++){
         reg->a_table[i] = (AtomicSRSWRegister*) calloc(readers, sizeof(AtomicSRSWRegister));
         for(int j = 0;j<readers;j++) {
-            // reg->a_table[i][j] = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
             createAtomicSRSWRegister(&(reg->a_table[i][j]),init);
         }
     }
@@ -32,7 +31,7 @@ int readMRSW(AtomicMRSWRegister* reg) {
         createStampedValue(reg->a_table[me][i].r_value,value->r_value->stamp, value->r_value->value);
     }
     // The book is strange, I don't understand why it says to return an object of type StampedValue,
-    // but the function is of type int ???
+    // but the function is of type int (chacken with Kambiz, it is right)
     return value->r_value->value;
 }
 
@@ -107,7 +106,7 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
         return EXIT_FAILURE;
     }
     initStampedValue(returnedReg->r_value,0);
-    // printf("\n size of table %d \n",reg->sizeOfTable);
+
     for(int i = 0; i < reg->sizeOfTable; i++) {
         
         if(reg->a_table[i] == NULL) {
@@ -115,7 +114,6 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
             return EXIT_FAILURE;
         }
         for(int j = 0; j < reg->sizeOfTable; j++) {
-            // printf("\nMaxMRSW: In the Max function, position:%d %d ; stamp, value are: %ld %d",i,j,reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
             if(reg->a_table[i][j].r_value->stamp > returnedReg->r_value->stamp){
                 returnedReg->r_value->stamp = reg->a_table[i][j].r_value->stamp;
                 returnedReg->r_value->value = reg->a_table[i][j].r_value->value;

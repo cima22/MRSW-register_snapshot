@@ -12,12 +12,6 @@
 #include "omp.h"
 #include "mrswRegisterOpenMP.h"
 
-// typedef struct {
-//     long stamp;
-//     int value;
-//     int* snap;
-// } StampedSnap;
-
 typedef struct {
     AtomicMRSWRegister mrswReg;
     int* snap;

@@ -23,7 +23,6 @@ int createWFSnapshot(WFSnapshot* snapshot, int capacity, int init) {
             fprintf(stderr, "Memory allocation failed: stamped snap");
             return EXIT_FAILURE;
         }
-        // int numberReaders = omp_get_num_threads();
         createAtomicMRSWRegister(&(snapshot->a_table[i].mrswReg),init, capacity);
     }
     snapshot->capacity = capacity;
@@ -43,7 +42,7 @@ int collect(WFSnapshot* snapshot, ModifiedMRSW** copy){
             return EXIT_FAILURE;
         }
         memcpy(snap,snapshot->a_table[j].snap,snapshot->capacity*sizeof(int));
-        // (*copy)[j] = snapshot->a_table[j];
+
         (*copy)[j].snap = snap;
         CopyContentMRSWRegister(&((*copy)[j].mrswReg), &(snapshot->a_table[j].mrswReg));
     }
@@ -52,18 +51,12 @@ int collect(WFSnapshot* snapshot, ModifiedMRSW** copy){
 
 int update(WFSnapshot* snapshot, int value, long*ThreadLastStamp) {
     int me = omp_get_thread_num();
-    // long ThreadLastStamp = (long)me;
     if(scan(snapshot,snapshot->a_table[me].snap) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
-    // printf("\nthe value to write is %d:",value);
+
     writeMRSW(&(snapshot->a_table[me].mrswReg), ThreadLastStamp,value);
-    // AtomicSRSWRegister* old_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
-    // #pragma omp barrier
-    // MaxMRSW(&(snapshot->a_table[me].mrswReg), old_cpySRSW);
-    // printf("\n In update : old stamp %ld old value %d", old_cpySRSW->r_value->stamp, old_cpySRSW->r_value->value);
-    // snapshot->a_table[me].stamp++;
-    // snapshot->a_table[me].value = value;
+
     return EXIT_SUCCESS;
 }
 
@@ -76,22 +69,20 @@ int scan(WFSnapshot* snapshot, int* snap) {
     if(collect(snapshot,&oldCopy) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
-    if(omp_get_thread_num() == 0)
-        sleep(1);
+    // Uncomment for further testing 
+    // if(omp_get_thread_num() == 0)
+    //     sleep(3);
     while (true) {
         bool continueWhile = false;
         if(collect(snapshot,&newCopy) == EXIT_FAILURE){
             return EXIT_FAILURE;
         }
         for (int j = 0; j < snapshot->capacity; j++) {
-            // AtomicSRSWRegister* old_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
+            
             AtomicSRSWRegister old_cpySRSW;
             MaxMRSW(&(oldCopy[j].mrswReg), &old_cpySRSW);
-            // AtomicSRSWRegister* new_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
             AtomicSRSWRegister new_cpySRSW;
             MaxMRSW(&(newCopy[j].mrswReg), &new_cpySRSW);
-            // printf("\n In Scan of j:%d : old stamp %ld old value %d; new stamp %ld new value %d",j, old_cpySRSW->r_value->stamp, old_cpySRSW->r_value->value,
-                                                                                // new_cpySRSW->r_value->stamp, new_cpySRSW->r_value->value);
             if ((old_cpySRSW.r_value->stamp) != (new_cpySRSW.r_value->stamp)) {
                 if (moved[j]) {
                     memcpy(snap,oldCopy[j].snap,snapshot->capacity * sizeof(int));
@@ -101,14 +92,17 @@ int scan(WFSnapshot* snapshot, int* snap) {
                     // }
                     // free(oldCopy);
                     // free(newCopy);
+                    printf("Went in the moved\n");
                     return EXIT_SUCCESS;
                 } else {
+                    printf("Went into the else\n");
                     moved[j] = true;
                     // for (int i = 0; i < snapshot->capacity; ++i) {
                     //     free(oldCopy[i].snap);
                     // }
                     // free(oldCopy);
-                    sleep(3);
+                    // Uncomment for further testing
+                    // sleep(3);
                     oldCopy = newCopy;
                     continueWhile = true;
                 }
@@ -117,7 +111,7 @@ int scan(WFSnapshot* snapshot, int* snap) {
         if(continueWhile)
             continue;
         for (int j = 0; j < snapshot->capacity; j++) {
-            // AtomicSRSWRegister* new_cpySRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
+
             AtomicSRSWRegister new_cpySRSW;
             MaxMRSW(&(newCopy[j].mrswReg), &new_cpySRSW);
             snap[j] = new_cpySRSW.r_value->value;
