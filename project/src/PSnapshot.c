@@ -11,7 +11,26 @@
 typedef struct{
     int threadID;
     int sn;
-} regStamp;
+} RegStamp;
+
+typedef struct{
+    RegStamp* regStamps;
+    size_t size;
+} RegStampCollection;
+
+int createRegStampCollection(RegStampCollection* collection){
+    if(collection == NULL) {
+        fprintf(stderr, "Register Stamp collection to create is null");
+        return EXIT_FAILURE;
+    }
+    collection->regStamps = NULL;
+    collection->size = 0;
+    return EXIT_SUCCESS;
+}
+
+void freeRegStampCollection(RegStampCollection* collection){
+    free(collection->regStamps);
+}
 
 int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) {
     if(snapshot == NULL) {
@@ -24,6 +43,11 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
     if(snapshot->reg == NULL) {
         fprintf(stderr, "Memory allocation failed: register array");
         return EXIT_FAILURE;
+    }
+    for (int i = 0; i < capacity; ++i) {
+        snapshot->reg[i].value = init;
+        snapshot->reg[i].threadID = -1;
+        snapshot->reg[i].sn = -1;
     }
     snapshot->AS = calloc(capacity, sizeof(activeSet));
     if(snapshot->AS == NULL) {
@@ -54,7 +78,20 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
 }
 
 bool regsEqual(Reg r1, Reg r2){
-    return r1.value == r2.value && r1.threadID == r2.threadID && r1.nbw == r2.nbw ? true : false;
+    return r1.value == r2.value && r1.threadID == r2.threadID && r1.sn == r2.sn;
+}
+
+int threadMoved(RegStampCollection* can_help_me){
+    RegStamp* regStamps = can_help_me->regStamps;
+    for (int i = 0; i < can_help_me->size; ++i) {
+        for (int j = i + 1; j < can_help_me->size; ++j) {
+            if(regStamps[i].threadID == regStamps[j].threadID &&
+                regStamps[i].sn != regStamps[j].sn){
+                return regStamps[i].threadID;
+            }
+        }
+    }
+    return -1;
 }
 
 int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRegisters){
@@ -65,10 +102,9 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
         return EXIT_FAILURE;
     }
     memcpy(snapshot->ANNOUNCE[me],registers,numRegisters * sizeof(Reg));
-    regStamp can_help_me[snapshot->capacity];
-    for (int i = 0; i < snapshot->capacity; ++i) {
-        can_help_me[i].threadID = -1;
-        can_help_me[i].sn = -1;
+    RegStampCollection can_help_me;
+    if(createRegStampCollection(&can_help_me) == EXIT_FAILURE){
+        return EXIT_FAILURE;
     }
     Reg aa[numRegisters];
     Reg bb[numRegisters];
@@ -83,7 +119,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
             bb[i] = snapshot->reg[registers[i]];
         }
         bool areEqual = true;
-        for (int i = 0; i < numRegisters && areEqual; ++i) {
+        for (int i = 0; (i < numRegisters) && areEqual; ++i) {
             areEqual = regsEqual(aa[i],bb[i]);
         }
         if(areEqual){
@@ -95,11 +131,27 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
         }
         for (int i = 0; i < numRegisters; ++i) {
             if(!regsEqual(aa[i],bb[i])){
-                can_help_me[registers[i]].threadID = bb[i].threadID;
-                can_help_me[registers[i]].sn = bb[i].sn;
+                int idx = can_help_me.size;
+                can_help_me.size = idx + 1;
+                can_help_me.regStamps = realloc(can_help_me.regStamps,can_help_me.size * sizeof(RegStamp));
+                if(can_help_me.regStamps == NULL){
+                    fprintf(stderr, "Memory allocation failed: can_help_me");
+                    return EXIT_FAILURE;
+                }
+                can_help_me.regStamps[idx].threadID = bb[i].threadID;
+                can_help_me.regStamps[idx].sn = bb[i].sn;
             }
         }
-
+        int threadMovedId = threadMoved(&can_help_me);
+        if(threadMovedId != -1){
+            for (int j = 0; j < numRegisters; ++j) {
+                (snapshot->AS[registers[j]])[me] = false;
+            }
+            memcpy(pSnap,snapshot->HELPSNAP[threadMovedId][me],numRegisters * sizeof(int));
+            freeRegStampCollection(&can_help_me);
+            return EXIT_SUCCESS;
+        }
+        memcpy(aa,bb,sizeof(bb));
     }
 }
 
@@ -108,7 +160,7 @@ void freePSnapshot(PSnapshot* snapshot){
         for (int j = 0; j < snapshot->threadNum; ++j) {
             free(snapshot->HELPSNAP[i][j]);
         }
-        free(snapshot->HELPSNAP[i])
+        free(snapshot->HELPSNAP[i]);
     }
     free(snapshot->HELPSNAP);
     for (int i = 0; i < snapshot->threadNum; ++i) {
