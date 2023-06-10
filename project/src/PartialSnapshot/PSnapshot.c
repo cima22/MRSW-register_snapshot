@@ -3,13 +3,14 @@
 //
 
 #include "PSnapshot.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "omp.h"
+#include "mrmwREG.h"
 
 typedef struct{
-    int threadID;
+    int pid;
     int sn;
 } RegStamp;
 
@@ -39,16 +40,16 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
     }
     snapshot->capacity = capacity;
     snapshot->threadNum = threadNum;
-    snapshot->reg = calloc(capacity, sizeof(Reg));
+    snapshot->reg = calloc(capacity, sizeof(mrmwREG));
     if(snapshot->reg == NULL) {
         fprintf(stderr, "Memory allocation failed: register array");
         return EXIT_FAILURE;
     }
     for (int i = 0; i < capacity; ++i) {
-        snapshot->reg[i].value = init;
-        snapshot->reg[i].threadID = -1;
-        snapshot->reg[i].sn = -1;
+        initREG(&snapshot->reg[i], init, -1, -1);
+        fprintf(stdout, "%d\n", getValue(snapshot->reg[i]));
     }
+
     snapshot->AS = calloc(capacity, sizeof(activeSet));
     if(snapshot->AS == NULL) {
         fprintf(stderr, "Memory allocation failed: active set array");
@@ -77,17 +78,13 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
     return EXIT_SUCCESS;
 }
 
-bool regsEqual(Reg r1, Reg r2){
-    return r1.value == r2.value && r1.threadID == r2.threadID && r1.sn == r2.sn;
-}
-
 int threadMoved(RegStampCollection* can_help_me){
     RegStamp* regStamps = can_help_me->regStamps;
     for (int i = 0; i < can_help_me->size; ++i) {
         for (int j = i + 1; j < can_help_me->size; ++j) {
-            if(regStamps[i].threadID == regStamps[j].threadID &&
-                regStamps[i].sn != regStamps[j].sn){
-                return regStamps[i].threadID;
+            if(regStamps[i].pid == regStamps[j].pid &&
+               regStamps[i].sn != regStamps[j].sn){
+                return regStamps[i].pid;
             }
         }
     }
@@ -96,18 +93,18 @@ int threadMoved(RegStampCollection* can_help_me){
 
 int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRegisters){
     int me = omp_get_thread_num();
-    snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(Reg));
+    snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(mrmwREG));
     if(snapshot->ANNOUNCE[me] == NULL){
         fprintf(stderr, "Memory allocation failed: ANNOUNCE[me] in p_snapshot()");
         return EXIT_FAILURE;
     }
-    memcpy(snapshot->ANNOUNCE[me],registers,numRegisters * sizeof(Reg));
+    memcpy(snapshot->ANNOUNCE[me],registers,numRegisters * sizeof(mrmwREG));
     RegStampCollection can_help_me;
     if(createRegStampCollection(&can_help_me) == EXIT_FAILURE){
         return EXIT_FAILURE;
     }
-    Reg aa[numRegisters];
-    Reg bb[numRegisters];
+    mrmwREG aa[numRegisters];
+    mrmwREG bb[numRegisters];
     for (int i = 0; i < numRegisters; ++i) {
         (snapshot->AS[registers[i]])[me] = true;
     }
@@ -120,7 +117,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
         }
         bool areEqual = true;
         for (int i = 0; (i < numRegisters) && areEqual; ++i) {
-            areEqual = regsEqual(aa[i],bb[i]);
+            areEqual = compareREG(aa[i],bb[i]);
         }
         if(areEqual){
             for (int i = 0; i < numRegisters; ++i) {
@@ -130,7 +127,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
             return EXIT_SUCCESS;
         }
         for (int i = 0; i < numRegisters; ++i) {
-            if(!regsEqual(aa[i],bb[i])){
+            if(!compareREG(aa[i],bb[i])){
                 int idx = can_help_me.size;
                 can_help_me.size = idx + 1;
                 can_help_me.regStamps = realloc(can_help_me.regStamps,can_help_me.size * sizeof(RegStamp));
@@ -138,7 +135,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
                     fprintf(stderr, "Memory allocation failed: can_help_me");
                     return EXIT_FAILURE;
                 }
-                can_help_me.regStamps[idx].threadID = bb[i].threadID;
+                can_help_me.regStamps[idx].pid = bb[i].pid;
                 can_help_me.regStamps[idx].sn = bb[i].sn;
             }
         }

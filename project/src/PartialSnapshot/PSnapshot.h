@@ -3,15 +3,10 @@
 //
 
 #include <stdbool.h>
+#include "mrmwREG.h"
 
 #ifndef MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
 #define MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
-
-typedef struct {
-    int value;
-    int threadID;
-    int sn;
-} Reg;
 
 typedef bool* activeSet;
 typedef int* snap;
@@ -20,7 +15,7 @@ typedef int* registerSet;
 typedef struct {
     int capacity;
     int threadNum;
-    Reg* reg;
+    mrmwREG* reg;
     activeSet* AS;
     registerSet* ANNOUNCE;
     snap** HELPSNAP;
