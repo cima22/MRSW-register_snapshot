@@ -5,7 +5,6 @@ void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers) {
     for(int i = 0;i<readers;i++){
         reg->a_table[i] = (AtomicSRSWRegister*) calloc(readers, sizeof(AtomicSRSWRegister));
         for(int j = 0;j<readers;j++) {
-            // reg->a_table[i][j] = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
             createAtomicSRSWRegister(&(reg->a_table[i][j]),init);
         }
     }
@@ -13,7 +12,7 @@ void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers) {
 }
 
 
-int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp) {
+int readMRSW(AtomicMRSWRegister* reg) {
     int me = omp_get_thread_num();
 
     // Here I just copied the content of the SRSW register, did not create a pointer to the exact same location
@@ -32,19 +31,19 @@ int readMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp) {
         createStampedValue(reg->a_table[me][i].r_value,value->r_value->stamp, value->r_value->value);
     }
     // The book is strange, I don't understand why it says to return an object of type StampedValue,
-    // but the function is of type int ???
+    // but the function is of type int (chacken with Kambiz, it is right)
     return value->r_value->value;
 }
 
-void writeMRSW(AtomicMRSWRegister* reg, long ThreadLastStamp,int v) {
-    long stamp = ThreadLastStamp + 1;
-    ThreadLastStamp = stamp;
+void writeMRSW(AtomicMRSWRegister* reg, long* ThreadLastStamp,int v) {
+    long stamp = *ThreadLastStamp + 1;
+    *ThreadLastStamp = stamp;
     AtomicSRSWRegister* regSRSW = (AtomicSRSWRegister*)calloc(1, sizeof(AtomicSRSWRegister));
     createAtomicSRSWRegister(regSRSW,v);
 
     int sizeOfTable = reg->sizeOfTable;
     for (int i = 0; i < sizeOfTable; i++) {
-        createStampedValue(reg->a_table[i][i].r_value, regSRSW->r_value->stamp,regSRSW->r_value->value);
+        createStampedValue(reg->a_table[i][i].r_value, stamp,regSRSW->r_value->value);
     }
 }
 
@@ -107,7 +106,7 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
         return EXIT_FAILURE;
     }
     initStampedValue(returnedReg->r_value,0);
-    // printf("\n size of table %d \n",reg->sizeOfTable);
+
     for(int i = 0; i < reg->sizeOfTable; i++) {
         
         if(reg->a_table[i] == NULL) {
@@ -115,7 +114,6 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
             return EXIT_FAILURE;
         }
         for(int j = 0; j < reg->sizeOfTable; j++) {
-            printf("\nMaxMRSW: In the Max function: stamp, value are: %ld %d",reg->a_table[i][j].r_value->stamp,reg->a_table[i][j].r_value->value);
             if(reg->a_table[i][j].r_value->stamp > returnedReg->r_value->stamp){
                 returnedReg->r_value->stamp = reg->a_table[i][j].r_value->stamp;
                 returnedReg->r_value->value = reg->a_table[i][j].r_value->value;
