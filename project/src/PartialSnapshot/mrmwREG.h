@@ -1,9 +1,12 @@
 //
 // Created by AK Gunter on 10.06.23.
 //
-
+#ifndef MRMWREG_H
+#define MRMWREG_H
 #include <stdatomic.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include<omp.h>
 
 typedef struct {
     atomic_int value;
@@ -24,12 +27,11 @@ void updateREG(mrmwREG * reg, int value, int sn);
  */
 bool compareREG(mrmwREG aa, mrmwREG bb);
 
-void copyREG(mrmwREG*aa,mrmwREG* bb)
+void copyREG(mrmwREG*aa,mrmwREG* bb);
 
 int getValue(mrmwREG reg);
 
 int getPid(mrmwREG reg);
 
 int getSn(mrmwREG reg);
-
-
+#endif // MRMWREG_H

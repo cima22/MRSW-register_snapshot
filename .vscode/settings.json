@@ -62,7 +62,9 @@
         "future": "cpp",
         "time.h": "c",
         "omp.h": "c",
-        "srswregisteropenmp.h": "c"
+        "srswregisteropenmp.h": "c",
+        "mrmwreg.h": "c",
+        "psnapshot.h": "c"
     },
     "cmake.sourceDirectory": "/home/serb/Desktop/MRSW-register_snapshot/project"
 }

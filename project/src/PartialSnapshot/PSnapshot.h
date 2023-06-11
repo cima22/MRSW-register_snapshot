@@ -2,11 +2,14 @@
 // Created by Gabriele on 09/06/2023.
 //
 
-
-#include "mrmwREG.h"
-
 #ifndef MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
 #define MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
+
+#include "PSnapshot.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mrmwREG.h"
 
 typedef bool* activeSet;
 typedef int* snap;
@@ -18,8 +21,19 @@ typedef struct {
     mrmwREG* reg;
     activeSet* AS;
     registerSet* ANNOUNCE;
+    int* ANNOUNCE_SIZES;
     snap** HELPSNAP;
 } PSnapshot;
+
+typedef struct{
+    int pid;
+    int sn;
+} RegStamp;
+
+typedef struct{
+    RegStamp* regStamps;
+    size_t size;
+} RegStampCollection;
 
 typedef struct {
     int* threads_to_help;
