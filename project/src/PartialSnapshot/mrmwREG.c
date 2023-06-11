@@ -21,6 +21,12 @@ bool compareREG(mrmwREG aa, mrmwREG bb){
            && getSn(aa) == getSn(bb);
 }
 
+void copyREG(mrmwREG*aa,mrmwREG* bb) {
+    aa->pid = bb->pid;
+    aa->sn = bb->sn;
+    aa->value = bb->value;
+}
+
 int getValue(mrmwREG reg){
     return atomic_load(&reg.value);
 }

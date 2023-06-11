@@ -3,6 +3,7 @@
 //
 
 #include <stdatomic.h>
+#include <stdbool.h>
 
 typedef struct {
     atomic_int value;
@@ -22,6 +23,8 @@ void updateREG(mrmwREG * reg, int value, int sn);
  * @return true if they are equal for all their attributes, else false
  */
 bool compareREG(mrmwREG aa, mrmwREG bb);
+
+void copyREG(mrmwREG*aa,mrmwREG* bb)
 
 int getValue(mrmwREG reg);
 

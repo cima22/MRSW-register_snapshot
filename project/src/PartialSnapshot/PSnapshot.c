@@ -47,7 +47,11 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
     }
     for (int i = 0; i < capacity; ++i) {
         initREG(&snapshot->reg[i], init, -1, -1);
-        fprintf(stdout, "%d\n", getValue(snapshot->reg[i]));
+        // this usage of the tmp: the getValue
+        // function was giving a strange error of type mrmwREG incompatible with type mrmwREG
+        mrmwREG tmp;
+        copyREG(&tmp, &(snapshot->reg[i]));
+        fprintf(stdout, "%d\n", getValue(tmp));
     }
 
     snapshot->AS = calloc(capacity, sizeof(activeSet));
@@ -109,11 +113,11 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
         (snapshot->AS[registers[i]])[me] = true;
     }
     for (int i = 0; i < numRegisters; ++i) {
-        aa[i] = snapshot->reg[registers[i]];
+        copyREG(&(aa[i]),&(snapshot->reg[registers[i]]));
     }
     while(true){
         for (int i = 0; i < numRegisters; ++i) {
-            bb[i] = snapshot->reg[registers[i]];
+            copyREG(&(bb[i]), &(snapshot->reg[registers[i]]));
         }
         bool areEqual = true;
         for (int i = 0; (i < numRegisters) && areEqual; ++i) {
@@ -169,4 +173,146 @@ void freePSnapshot(PSnapshot* snapshot){
     }
     free(snapshot->AS);
     free(snapshot->reg);
+}
+
+int get_sequence_number() {
+    static int seq = 0;
+    return ++seq;
+}
+
+// if to_help[i] == true, means that there are still threads that need
+// to be helped
+bool checkToHelpEmpty(bool* to_help, int threadNum) {
+    for(int i = 0;i<threadNum;i++) {
+        if(to_help[i] == true)
+        return false;
+    }
+    return true;
+}
+bool isInAnnounce(registerSet announce,int rr, int capacity) {
+    for(int i = 0;i<capacity;i++)
+        if(announce[i] == rr)
+            return true;
+    return false;
+}
+
+int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
+    // line 1
+    int threadNum = snapshot->threadNum;
+    int capacity = snapshot->capacity;
+    int nbw = get_sequence_number();
+    updateREG(&(snapshot->reg[r]),value,nbw);
+    
+    // line 2
+    activeSet readers[threadNum];
+    memcpy(readers, snapshot->AS[r], sizeof(bool) * threadNum);
+    registerSet* announce = calloc(threadNum, sizeof(registerSet));
+    if (announce == NULL) {
+        fprintf(stderr, "Memory allocation failed: announce in update()");
+        return;
+    }
+    for (int j = 0;j<threadNum;j++) {
+        announce[j] = calloc(capacity,sizeof(int));
+        if(announce[j] == NULL) {
+            fprintf(stderr, "Memory allocation failed: announce[%d] in update()", j);
+            return;
+        }
+    }
+    // line 05 begin
+    bool to_help[threadNum];
+    for(int i = 0;i<threadNum;i++) to_help[i] = false;
+
+    for(int j = 0;j<threadNum;j++) {
+        if (readers[j] == true) {
+            memcpy(announce[j], snapshot->ANNOUNCE[j], capacity * sizeof(int));
+            if(announce[j][r] == true) 
+                to_help[j] = true;
+        }
+    }
+    if (checkToHelpEmpty(to_help, threadNum))
+        return EXIT_SUCCESS;
+    // line 07 end
+
+    // line 08
+    // is register rr needed?
+    bool to_read[capacity];
+    for (int i = 0;i<capacity;i++) to_read[i] = false;
+    for(int i = 0;i<threadNum;i++) {
+        for (int j = 0;j<capacity; j++) {
+            if(announce[i][j] == true)
+            to_read[j] = true;
+        }
+    }
+
+    // line 09
+    RegStampCollection can_help[threadNum];
+    for (int i = 0;i<threadNum;i++)
+        if(createRegStampCollection(&can_help[i]) == EXIT_FAILURE){
+        return EXIT_FAILURE;
+        }
+    // line 10
+    mrmwREG aa[capacity];
+    mrmwREG bb[capacity];
+    for (int rr = 0;rr<capacity;rr++){
+        if(to_read[rr] == true)
+        // here a function for copying structs is needed
+        copyREG(&(aa[rr]), &(snapshot->reg[rr]));
+    }
+    // begin line 11
+    while (!checkToHelpEmpty(to_help,threadNum)) {
+        for(int i = 0;i<capacity;i++)
+            if(to_read[i] == true) 
+                copyREG(&(bb[i]), &(snapshot->reg[i]));
+
+        bool still_to_help[threadNum];
+        for(int i = 0;i<threadNum;i++) still_to_help[i] = false;
+
+        for(int rr = 0;rr<capacity;rr++)
+            if(to_read[rr] == true)
+                if(!compareREG(aa[rr],bb[rr])) {
+
+                for(int j = 0;j<threadNum;j++)
+                    if(to_help[j] == true)
+                        if(isInAnnounce(announce[j], rr, capacity)) {
+                            still_to_help[j] = true;
+                            int idx = can_help[j].size;
+                            can_help[j].size = idx + 1;
+                            can_help[j].regStamps = realloc(can_help[j].regStamps,can_help[j].size * sizeof(RegStamp));
+                            if(can_help[j].regStamps == NULL){
+                                fprintf(stderr, "Memory allocation failed: can_help_me");
+                                return EXIT_FAILURE;
+                            }
+                            can_help[j].regStamps[idx].pid = bb[r].pid;
+                            can_help[j].regStamps[idx].sn = bb[r].sn;
+                }
+            }
+        
+        for(int j = 0;j<threadNum; j++)
+            if(to_help[j] == true && still_to_help[j] == false) {
+                snapshot->HELPSNAP[ThreadID][j] = calloc(capacity,sizeof(int));
+                for(int r = 0;r<capacity;r++) {
+                    snapshot->HELPSNAP[ThreadID][j][r] = bb[r].value;
+                }
+            }
+        for(int j = 0;j<threadNum;j++) {
+            int threadMovedId = threadMoved(&can_help[j]);
+            if(threadMovedId!=-1) {
+                memcpy(snapshot->HELPSNAP[ThreadID][j], snapshot->HELPSNAP[threadMovedId][j], capacity*sizeof(int));
+                still_to_help[j] = false;
+            }
+        }
+        memcpy(to_help,still_to_help,threadNum*sizeof(bool));
+        memcpy(aa,bb,capacity * sizeof(mrmwREG));
+
+        for(int j = 0;j<capacity;j++)to_read[j] = false;
+        for(int i = 0;i<threadNum;i++) {
+            for (int j = 0;j<capacity; j++) {
+                if(announce[i][j] == true)
+                to_read[j] = true;
+            }
+        }
+    }
+    return EXIT_SUCCESS;
+
+    
 }

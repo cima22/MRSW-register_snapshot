@@ -2,7 +2,7 @@
 // Created by Gabriele on 09/06/2023.
 //
 
-#include <stdbool.h>
+
 #include "mrmwREG.h"
 
 #ifndef MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
@@ -21,9 +21,22 @@ typedef struct {
     snap** HELPSNAP;
 } PSnapshot;
 
+typedef struct {
+    int* threads_to_help;
+    int size;
+}ToHelp;
+
+typedef struct {
+    int* registers_to_read;
+    int size;
+}ToRead;
+
 int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init);
 int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRegisters);
 int update(PSnapshot* snapshot, int r, int value, int threadID);
 void freePSnapshot(PSnapshot* snapshot);
+bool checkToHelpEmpty(bool* to_help, int threadNum);
+bool isInAnnounce(registerSet announce,int rr, int capacity);
+int get_sequence_number();
 
 #endif //MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H
