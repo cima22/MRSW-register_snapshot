@@ -8,5 +8,5 @@ add_executable(project
         src/mrswRegister.c
         src/stampedValue.c src/stampedValue.h
         src/srswRegister.c
-        src/srswRegisterOpenMP.c src/srswRegisterOpenMP.
+        src/srswRegisterOpenMP.c src/srswRegisterOpenMP.c
         src/WFSnapshot.c src/WFSnapshot.h)
