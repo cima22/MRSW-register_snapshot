@@ -36,8 +36,8 @@ int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init) 
         initREG(&snapshot->reg[i], init, -1, -1);
         // this usage of the tmp: the getValue
         // function was giving a strange error of type mrmwREG incompatible with type mrmwREG
-        mrmwREG tmp;
-        copyREG(&tmp, &(snapshot->reg[i]));
+        // mrmwREG tmp;
+        // copyREG(&tmp, &(snapshot->reg[i]));
         // fprintf(stdout, "%d\n", getValue(tmp));
     }
 
@@ -179,9 +179,11 @@ bool checkToHelpEmpty(bool* to_help, int threadNum) {
     return true;
 }
 bool isInAnnounce(registerSet announce,int rr, int capacity) {
-    for(int i = 0;i<capacity;i++)
-        if(announce[i] == rr)
+    for(int i = 0;i<capacity;i++){
+        if(announce[i] == rr){
             return true;
+        }
+    }
     return false;
 }
 
@@ -190,13 +192,10 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     int threadNum = snapshot->threadNum;
     int capacity = snapshot->capacity;
     int nbw = get_sequence_number();
-    // printf("value:%d\n", value);
+
     updateREG(&(snapshot->reg[r]),value,nbw);
-    // printf("updatedRegister:%d\n", getValue(snapshot->reg[r]));
     // line 2
     activeSet readers = calloc(threadNum, sizeof(bool));
-    // printf("snapshot: %d\n", snapshot->AS[r][0]);
-    // printf("snapshot: %d\n", snapshot->AS[r][1]);
     memcpy(readers, snapshot->AS[r], sizeof(bool) * threadNum);
     registerSet* announce = calloc(threadNum, sizeof(registerSet));
     if (announce == NULL) {
@@ -247,7 +246,6 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     mrmwREG bb[capacity];
     for (int rr = 0;rr<capacity;rr++){
         if(to_read[rr] == true)
-        // here a function for copying structs is needed
         copyREG(&(aa[rr]), &(snapshot->reg[rr]));
     }
     // begin line 11
@@ -282,7 +280,6 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         for(int j = 0;j<threadNum; j++)
             if(to_help[j] == true && still_to_help[j] == false) {
                 snapshot->HELPSNAP[ThreadID][j] = calloc(snapshot->ANNOUNCE_SIZES[j],sizeof(int));
-                // here the capacity should be the capacity of announce[j], don't think it is the same for every announce, as the snapshot.capacity
                 for(int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j];rr++) {
                     snapshot->HELPSNAP[ThreadID][j][rr] = bb[announce[j][rr]].value;
                 }
@@ -305,15 +302,16 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         for(int j = 0;j<threadNum;j++) {
             for (int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j]; rr++) {
                 to_read[announce[j][rr]] = true;
+                
             }
         }
-        for(int i = 0;i<threadNum;i++) {
+
+    }
+            for(int i = 0;i<threadNum;i++) {
             free(announce[i]);
         }
         free(announce);
         free(readers);
-    }
-    // printf("one thread got to update_end!\n");
     return EXIT_SUCCESS;
 
     

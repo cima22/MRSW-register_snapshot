@@ -4,8 +4,8 @@
 #include <omp.h>
 #include "PSnapshot.h"
 
-#define NUM_THREADS 5
-#define NUM_REGISTERS 5
+#define NUM_THREADS 10
+#define NUM_REGISTERS 3
 
 void printSnap(snap pSnap, int numRegisters) {
     for (int i = 0; i < numRegisters; ++i) {
@@ -25,20 +25,33 @@ int main() {
     {
         int thread_id = omp_get_thread_num();
 
-         unsigned int rand_seed = thread_id;
+        //  unsigned int rand_seed = thread_id + 1;
 
-        int num_registers = rand_r(&rand_seed) % (NUM_REGISTERS + 1); // random number from 0 to NUM_REGISTERS
+        // int num_registers = rand_r(&rand_seed) % (NUM_REGISTERS + 1); // random number from 0 to NUM_REGISTERS
+        // if(num_registers == 0) num_registers++;
 
-        int* registerSet = calloc(num_registers, sizeof(int));
-        if(registerSet == NULL){
-            fprintf(stderr, "Memory allocation failed: registerSet in main()");
-            exit(EXIT_FAILURE);
-        }
-        // printf("\nnum registers %d\n", num_registers);
-        for(int i = 0; i < num_registers; i++) {
-            registerSet[i] = rand_r(&rand_seed) % (NUM_REGISTERS); // Random register index
-        }
+        // int* registerSet = calloc(num_registers, sizeof(int));
+        // if(registerSet == NULL){
+        //     fprintf(stderr, "Memory allocation failed: registerSet in main()");
+        //     exit(EXIT_FAILURE);
+        // }
 
+        // for(int i = 0; i < num_registers; i++) {
+        //     while(true) {
+        //     int aa = rand_r(&rand_seed) % (NUM_REGISTERS); // Random register index
+        //     bool wasInVect = false;
+        //     for(int j = 0;j<i;j++){
+        //         if(aa == registerSet[j]){wasInVect = true; break;}
+        //     }
+        //     if(wasInVect == false) {
+        //     registerSet[i] = aa;
+        //     break;
+        //     }
+        //     }
+        // }
+        int registerSet[] = {0, 1, 2}; // array containing 0-9
+
+        int num_registers = sizeof(registerSet) / sizeof(registerSet[0]); 
         snap pSnap = calloc(num_registers, sizeof(snap));
         if(pSnap == NULL){
             fprintf(stderr, "Memory allocation failed: pSnap in main()");
@@ -47,8 +60,9 @@ int main() {
 
 
         // Write to multiple registers
+        // for(int j = 0;j<5;j++) {
         for(int i = 0; i < NUM_REGISTERS; i++){
-            if(update(&snapshot, i, (thread_id+1)*10 + thread_id + 1, thread_id) == EXIT_FAILURE)
+            if(update(&snapshot, i, (thread_id+1)*10 + 1, thread_id) == EXIT_FAILURE)
                 exit(EXIT_FAILURE);
         }
 
@@ -62,6 +76,7 @@ int main() {
         }
         printf("\n");
         }
+        
         free(pSnap);
     }
     freePSnapshot(&snapshot);
