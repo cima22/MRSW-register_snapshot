@@ -114,7 +114,7 @@ int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg) {
             return EXIT_FAILURE;
         }
         for(int j = 0; j < reg->sizeOfTable; j++) {
-            if(reg->a_table[i][j].r_value->stamp > returnedReg->r_value->stamp){
+            if(reg->a_table[i][j].r_value->stamp >= returnedReg->r_value->stamp){
                 returnedReg->r_value->stamp = reg->a_table[i][j].r_value->stamp;
                 returnedReg->r_value->value = reg->a_table[i][j].r_value->value;
             }

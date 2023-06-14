@@ -111,10 +111,7 @@ int scan(WFSnapshot* snapshot, int* snap) {
         if(continueWhile)
             continue;
         for (int j = 0; j < snapshot->capacity; j++) {
-
-            AtomicSRSWRegister new_cpySRSW;
-            MaxMRSW(&(newCopy[j].mrswReg), &new_cpySRSW);
-            snap[j] = new_cpySRSW.r_value->value;
+            snap[j] = readMRSW(&(newCopy[j].mrswReg));
         }
         // for (int i = 0; i < snapshot->capacity; ++i) {
         //     free(oldCopy[i].snap);
