@@ -14,7 +14,7 @@
 
 // the actual register
 typedef struct {
-    pSnapSv* r_value;
+    StampedValue* r_value;
 } AtomicSRSWRegister;
 
 // the thread specific data
