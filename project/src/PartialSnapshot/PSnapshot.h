@@ -12,8 +12,8 @@
 #include "mrmwREG.h"
 
 typedef bool* activeSet;
-typedef int* snap;
-typedef int* registerSet;
+typedef atomic_int* snap;
+typedef atomic_int* registerSet;
 
 typedef struct {
     int capacity;
@@ -46,11 +46,11 @@ typedef struct {
 }ToRead;
 
 int createPSnapshot(PSnapshot* snapshot, int capacity, int threadNum, int init);
-int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRegisters);
+int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters);
 int update(PSnapshot* snapshot, int r, int value, int threadID);
 void freePSnapshot(PSnapshot* snapshot);
 bool checkToHelpEmpty(bool* to_help, int threadNum);
-bool isInAnnounce(registerSet announce,int rr, int capacity);
+bool isInAnnounce(int* announce,int rr, int capacity);
 int get_sequence_number();
 
 #endif //MRSW_REGISTER_SNAPSHOT_PSNAPSHOT_H

@@ -82,7 +82,7 @@ int threadMoved(RegStampCollection* can_help_me){
     return -1;
 }
 
-int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRegisters){
+int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters){
     // printf("one thread got to p+snapshot!\n");
     int me = omp_get_thread_num();
     snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(mrmwREG));
@@ -91,7 +91,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
         fprintf(stderr, "Memory allocation failed: ANNOUNCE[me] in p_snapshot()");
         return EXIT_FAILURE;
     }
-    memcpy(snapshot->ANNOUNCE[me],registers,numRegisters * sizeof(mrmwREG));
+    CopyInttoAtomic(snapshot->ANNOUNCE[me],registers,numRegisters);
     RegStampCollection can_help_me;
     if(createRegStampCollection(&can_help_me) == EXIT_FAILURE){
         return EXIT_FAILURE;
@@ -137,7 +137,7 @@ int p_snapshot(PSnapshot* snapshot, snap pSnap, registerSet registers, int numRe
             for (int j = 0; j < numRegisters; ++j) {
                 (snapshot->AS[registers[j]])[me] = false;
             }
-            memcpy(pSnap,snapshot->HELPSNAP[threadMovedId][me],numRegisters * sizeof(int));
+            CopyAtomicInttoInt(pSnap,snapshot->HELPSNAP[threadMovedId][me],numRegisters);
             freeRegStampCollection(&can_help_me);
             return EXIT_SUCCESS;
         }
@@ -178,7 +178,7 @@ bool checkToHelpEmpty(bool* to_help, int threadNum) {
     }
     return true;
 }
-bool isInAnnounce(registerSet announce,int rr, int capacity) {
+bool isInAnnounce(int* announce,int rr, int capacity) {
     for(int i = 0;i<capacity;i++){
         if(announce[i] == rr){
             return true;
@@ -197,7 +197,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     // line 2
     activeSet readers = calloc(threadNum, sizeof(bool));
     memcpy(readers, snapshot->AS[r], sizeof(bool) * threadNum);
-    registerSet* announce = calloc(threadNum, sizeof(registerSet));
+    int** announce = calloc(threadNum, sizeof(int*));
     if (announce == NULL) {
         fprintf(stderr, "Memory allocation failed: announce in update()");
         return EXIT_FAILURE;
@@ -215,7 +215,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
     for(int j = 0;j<threadNum;j++) {
         if (readers[j] == true) {
-            memcpy(announce[j], snapshot->ANNOUNCE[j], snapshot->ANNOUNCE_SIZES[j] * sizeof(int));
+            CopyAtomicInttoInt(announce[j], snapshot->ANNOUNCE[j], snapshot->ANNOUNCE_SIZES[j]);
             if(isInAnnounce(announce[j],r,snapshot->ANNOUNCE_SIZES[j])) 
                 to_help[j] = true;
         }
@@ -279,9 +279,9 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
         for(int j = 0;j<threadNum; j++)
             if(to_help[j] == true && still_to_help[j] == false) {
-                snapshot->HELPSNAP[ThreadID][j] = calloc(snapshot->ANNOUNCE_SIZES[j],sizeof(int));
+                snapshot->HELPSNAP[ThreadID][j] = calloc(snapshot->ANNOUNCE_SIZES[j],sizeof(atomic_int));
                 for(int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j];rr++) {
-                    snapshot->HELPSNAP[ThreadID][j][rr] = bb[announce[j][rr]].value;
+                    atomic_store(&(snapshot->HELPSNAP[ThreadID][j][rr]),bb[announce[j][rr]].value);
                 }
             }
 
@@ -289,7 +289,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
             if(still_to_help[j] == true) {
                 int threadMovedId = threadMoved(&can_help[j]);
                 if(threadMovedId!=-1) {
-                    memcpy(snapshot->HELPSNAP[ThreadID][j], snapshot->HELPSNAP[threadMovedId][j], capacity*sizeof(int));
+                    CopyAtomicRegisters(snapshot->HELPSNAP[ThreadID][j], snapshot->HELPSNAP[threadMovedId][j], capacity);
                     still_to_help[j] = false;
             }
         }

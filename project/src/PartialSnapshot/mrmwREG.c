@@ -38,3 +38,20 @@ int getPid(mrmwREG reg){
 int getSn(mrmwREG reg){
     return atomic_load(&reg.sn);
 }
+
+void CopyAtomicInttoInt(int* vec1, atomic_int* vec2, int numOfElem) {
+    for (int i = 0; i < numOfElem; i++) {
+        vec1[i] = atomic_load(&vec2[i]);
+    }
+}
+void CopyAtomicRegisters(atomic_int* destination, atomic_int* source, int numOfElem) {
+    for(int i = 0; i < numOfElem; i++) {
+        atomic_store(&destination[i], atomic_load(&source[i]));
+    }
+}
+
+void CopyInttoAtomic(atomic_int* vec1, int* vec2, int numOfElem) {
+    for (int i = 0; i < numOfElem; i++) {
+        atomic_store(&(vec1[i]),vec2[i]);
+    }
+}

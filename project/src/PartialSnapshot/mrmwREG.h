@@ -34,4 +34,10 @@ int getValue(mrmwREG reg);
 int getPid(mrmwREG reg);
 
 int getSn(mrmwREG reg);
+
+void CopyAtomicInttoInt(int* vec1, atomic_int* vec2, int numOfElem);
+
+void CopyAtomicRegisters(atomic_int* destination, atomic_int* source, int numOfElem);
+
+void CopyInttoAtomic(atomic_int* vec1, int* vec2, int numOfElem);
 #endif // MRMWREG_H
