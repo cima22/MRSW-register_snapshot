@@ -71,8 +71,8 @@ int main(){
         for (int j = 0; j < i; ++j) {
             printf("[%d] ",snap1[j]);
         }
-        int maximum_threadNR = 0;
-#pragma omp parallel default(none) shared(test2Snapshot, maximum_threadNR) num_threads(i)
+        // int maximum_threadNR = 0;
+#pragma omp parallel default(none) shared(test2Snapshot) num_threads(i)
         {
             // testing to see how many trhreads on a machine
             // if(maximum_threadNR < omp_get_thread_num()){maximum_threadNR = omp_get_thread_num();printf(" %d\n", maximum_threadNR); }
@@ -149,184 +149,184 @@ int main(){
     }
     printf("\nTest 3 passed.\n\n");
 
-//     // Test 4:
-//     printf("Test 4: Snapshot made for 4,8,12,..,64 threads. \n \
-//     Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again;\n \
-//     The other threads updates their register with values from 0 to 1000.\n \
-//     * Assertion: the second scan must have greater values than the first scan, element-wise.\n");
+    // Test 4:
+    printf("Test 4: Snapshot made for 4,8,12,..,64 threads. \n \
+    Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again;\n \
+    The other threads updates their register with values from 0 to 1000.\n \
+    * Assertion: the second scan must have greater values than the first scan, element-wise.\n");
 
-//     for (int i = 4; i <= MAXTHRD; i += 4) {
-//         printf("\nTest 4 with %d threads.\n",i);
-//         PSnapshot test4Snapshot;
-//         if(createPSnapshot(&test4Snapshot,i,i,1) == EXIT_FAILURE){
-//             return EXIT_FAILURE;
-//         }
-//         int snap1[i];
-//         int snap2[i];
-//         int snap3[i];
-//         int snap4[i];
-//         bool thread0Done = false;
-//         bool thread1Done = false;
-//         int registers[i];
-//         for(int j = 0;j<i;j++)registers[j] = j;
+    for (int i = 4; i <= MAXTHRD; i += 4) {
+        printf("\nTest 4 with %d threads.\n",i);
+        PSnapshot test4Snapshot;
+        if(createPSnapshot(&test4Snapshot,i,i,1) == EXIT_FAILURE){
+            return EXIT_FAILURE;
+        }
+        int snap1[i];
+        int snap2[i];
+        int snap3[i];
+        int snap4[i];
+        bool thread0Done = false;
+        bool thread1Done = false;
+        int registers[i];
+        for(int j = 0;j<i;j++)registers[j] = j;
 
 // #pragma omp barrier
-// #pragma omp parallel default(none) shared(test4Snapshot,snap1,snap2,snap3,snap4,i,thread0Done,thread1Done,registers) num_threads(i)
-//         {
+#pragma omp parallel default(none) shared(test4Snapshot,snap1,snap2,snap3,snap4,i,thread0Done,thread1Done,registers) num_threads(i)
+        {printf("  %d \n", omp_get_thread_num());
 
 
-//             int me = omp_get_thread_num();
-//             if(me == 0){
-//                 p_snapshot(&test4Snapshot,snap1,registers,i);
-//                 printf("Snap 1: ");
-//                 for (int j = 0; j < i; ++j) {
-//                     printf("[%d] ", snap1[j]);
-//                 }
-//                 thread0Done = true;
-//                 while(!thread1Done){}
-//                 p_snapshot(&test4Snapshot,snap4, registers,i);
-//                 printf("\nSnap 4: ");
-//                 for (int j = 0; j < i; ++j) {
-//                     printf("[%d] ", snap4[j]);
-//                 }
-//             }
-//             if(me == 1){
-//                 while(!thread0Done){}
-//                 p_snapshot(&test4Snapshot,snap2, registers,i);
-//                 printf("\nSnap 2: ");
-//                 for (int j = 0; j < i; ++j) {
-//                     printf("[%d] ", snap2[j]);
-//                 }
-//                 struct timespec remaining, request = { 0, 10 * (2 << 20) };
-//                 nanosleep(&request, &remaining);
-//                 p_snapshot(&test4Snapshot,snap3, registers, i);
-//                 printf("\nSnap 3: ");
-//                 for (int j = 0; j < i; ++j) {
-//                     printf("[%d] ", snap3[j]);
-//                 }
-//                 thread1Done = true;
-//             }
-//             if(me != 0 && me != 1){
-//                 for (int j = 0; j < 10000; ++j) {
-//                     update(&test4Snapshot,omp_get_thread_num(), j, omp_get_thread_num());
-//                 }
-//             }
-//         }
-// #pragma omp barrier
-//         freePSnapshot(&test4Snapshot);
-//         for(int j = 0;j<i;j++) {
-//             if(snap1[j] > snap4[j])
-//                 assert(false);
-//             if(snap2[j] > snap3[j])
-//                 assert(false);
-//         }
-//     }
+            int me = omp_get_thread_num();
+            if(me == 0){
+                p_snapshot(&test4Snapshot,snap1,registers,i);
+                printf("Snap 1: ");
+                for (int j = 0; j < i; ++j) {
+                    printf("[%d] ", snap1[j]);
+                }
+                thread0Done = true;
+                while(!thread1Done){}
+                p_snapshot(&test4Snapshot,snap4, registers,i);
+                printf("\nSnap 4: ");
+                for (int j = 0; j < i; ++j) {
+                    printf("[%d] ", snap4[j]);
+                }
+            }
+            if(me == 1){
+                while(!thread0Done){}
+                p_snapshot(&test4Snapshot,snap2, registers,i);
+                printf("\nSnap 2: ");
+                for (int j = 0; j < i; ++j) {
+                    printf("[%d] ", snap2[j]);
+                }
+                struct timespec remaining, request = { 0, 10 * (2 << 20) };
+                nanosleep(&request, &remaining);
+                p_snapshot(&test4Snapshot,snap3, registers, i);
+                printf("\nSnap 3: ");
+                for (int j = 0; j < i; ++j) {
+                    printf("[%d] ", snap3[j]);
+                }
+                thread1Done = true;
+            }
+            if(me != 0 && me != 1){
+                for (int j = 0; j < 10000; ++j) {
+                    update(&test4Snapshot,omp_get_thread_num(), j, omp_get_thread_num());
+                }
+            }
+        }
+#pragma omp barrier
+        freePSnapshot(&test4Snapshot);
+        for(int j = 0;j<i;j++) {
+            if(snap1[j] > snap4[j])
+                assert(false);
+            if(snap2[j] > snap3[j])
+                assert(false);
+        }
+    }
 
-//     printf("\nTest 4 passed.\n\n");
+    printf("\nTest 4 passed.\n\n");
 
 
-//     // Test 5:
-// printf("Test 5: Snapshot made for 4,8,12,..,64 threads with randomly sized and valued registers.\n \
-// Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again.\n \
-// Both threads scan a random number of registers, and the scanned registers are random \n \
-// * Assertion: the second scan must have greater values than the first scan, element-wise.\n");
+    // Test 5:
+printf("Test 5: Snapshot made for 4,8,12,..,64 threads with randomly sized and valued registers.\n \
+Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again.\n \
+Both threads scan a random number of registers, and the scanned registers are random \n \
+* Assertion: the second scan must have greater values than the first scan, element-wise.\n");
 
-// for (int i = 4; i <= MAXTHRD; i += 4) {
-//     printf("\nTest 5 with %d threads.\n",i);
-//     PSnapshot test5Snapshot;
-//     if(createPSnapshot(&test5Snapshot, i, i, 0) == EXIT_FAILURE){
-//         return EXIT_FAILURE;
-//     }
+for (int i = 4; i <= MAXTHRD; i += 4) {
+    printf("\nTest 5 with %d threads.\n",i);
+    PSnapshot test5Snapshot;
+    if(createPSnapshot(&test5Snapshot, i, i, 0) == EXIT_FAILURE){
+        return EXIT_FAILURE;
+    }
     
-//     int snap1[i];
-//     int snap2[i];
-//     int snap3[i];
-//     int snap4[i];
+    int snap1[i];
+    int snap2[i];
+    int snap3[i];
+    int snap4[i];
 
-//     bool thread0Done = false;
-//     bool thread1Done = false;
-//     srand(time(NULL));
-//     int reg_size_read_1 = 0;
-//     int reg_size_read_2 = 0;
+    bool thread0Done = false;
+    bool thread1Done = false;
+    srand(time(NULL));
+    int reg_size_read_1 = 0;
+    int reg_size_read_2 = 0;
 
-// #pragma omp barrier
-// #pragma omp parallel default(none) shared(test5Snapshot,snap1,snap2,snap3,snap4,i,thread0Done,thread1Done,reg_size_read_1,reg_size_read_2) num_threads(i)
-//     {
-//         int me = omp_get_thread_num();
-//         int registerSize = rand() % (i-2) + 1; // random size for the vector
-//         if(omp_get_thread_num() == 0) reg_size_read_1 = registerSize;
-//         if(omp_get_thread_num() == 1) reg_size_read_2 = registerSize;
-//         int registers[registerSize];
-//         for(int j = 0; j < registerSize; j++){
-//             registers[j] = rand() % (i-2) + 2; // put in the vector a random register
-//         }
-//         // All the registers should have different values
-//         // It works for them having the same value as well, but it is not interesting
-//         for (int j = 0; j < registerSize; j++) {
-//             for (int k = j + 1; k < registerSize; k++) {
-//                 while (registers[j] == registers[k]) {
-//                     registers[k] = rand() % (i - 2) + 2;
-//                 }
-//             }
-//         }
+#pragma omp barrier
+#pragma omp parallel default(none) shared(test5Snapshot,snap1,snap2,snap3,snap4,i,thread0Done,thread1Done,reg_size_read_1,reg_size_read_2) num_threads(i)
+    {
+        int me = omp_get_thread_num();
+        int registerSize = rand() % (i-2) + 1; // random size for the vector
+        if(omp_get_thread_num() == 0) reg_size_read_1 = registerSize;
+        if(omp_get_thread_num() == 1) reg_size_read_2 = registerSize;
+        int registers[registerSize];
+        for(int j = 0; j < registerSize; j++){
+            registers[j] = rand() % (i-2) + 2; // put in the vector a random register
+        }
+        // All the registers should have different values
+        // It works for them having the same value as well, but it is not interesting
+        for (int j = 0; j < registerSize; j++) {
+            for (int k = j + 1; k < registerSize; k++) {
+                while (registers[j] == registers[k]) {
+                    registers[k] = rand() % (i - 2) + 2;
+                }
+            }
+        }
     
-//         if(me == 0){
-//             struct timespec remaining1, request1 = { 0, 0.1 * (2 << 20) };
-//                 nanosleep(&request1, &remaining1);
-//             p_snapshot(&test5Snapshot, snap1, registers, registerSize);
-//             printf("\nSnap 1: ");
-//             for (int j = 0; j < registerSize; ++j) {
-//                 printf("(register %d: [%d]) ",registers[j], snap1[j]);
-//             }
-//             struct timespec remaining11, request11 = { 0, 0.3 * (2 << 20) };
-//             nanosleep(&request11, &remaining11);
-//             thread0Done = true;
-//             while(!thread1Done){}
-//             p_snapshot(&test5Snapshot, snap4, registers, registerSize);
-//             printf("\nSnap 4: ");
-//             for (int j = 0; j < registerSize; ++j) {
-//                 printf("(register %d: [%d]) ",registers[j], snap4[j]);
-//             }
-//         }
-//         if(me == 1){
-//             struct timespec remaining2, request2 = { 0, 0.1 * (2 << 20) };
-//                 nanosleep(&request2, &remaining2);
-//             while(!thread0Done){}
-//             p_snapshot(&test5Snapshot, snap2, registers, registerSize);
-//             printf("\nSnap 2: ");
-//             for (int j = 0; j < registerSize; ++j) {
-//                 printf("(registru %d: [%d]) ",registers[j], snap2[j]);
-//             }
-//             struct timespec remaining22, request22 = { 0, 0.3 * (2 << 20) };
-//                 nanosleep(&request22, &remaining22);
-//             p_snapshot(&test5Snapshot, snap3, registers, registerSize);
-//             printf("\nSnap 3: ");
-//             for (int j = 0; j < registerSize; ++j) {
-//                 printf("(registru %d: [%d]) ",registers[j], snap3[j]);
-//             }
-//             thread1Done = true;
-//         }
-//         if(me != 0 && me != 1){
-//             for (int j = 0; j < 1000; ++j) {
-//                 update(&test5Snapshot, omp_get_thread_num(), j, omp_get_thread_num());
-//             }
-//         }
-//     }
-//     #pragma omp barrier
-//     freePSnapshot(&test5Snapshot);
+        if(me == 0){
+            struct timespec remaining1, request1 = { 0, 0.1 * (2 << 20) };
+                nanosleep(&request1, &remaining1);
+            p_snapshot(&test5Snapshot, snap1, registers, registerSize);
+            printf("\nSnap 1: ");
+            for (int j = 0; j < registerSize; ++j) {
+                printf("(register %d: [%d]) ",registers[j], snap1[j]);
+            }
+            struct timespec remaining11, request11 = { 0, 0.3 * (2 << 20) };
+            nanosleep(&request11, &remaining11);
+            thread0Done = true;
+            while(!thread1Done){}
+            p_snapshot(&test5Snapshot, snap4, registers, registerSize);
+            printf("\nSnap 4: ");
+            for (int j = 0; j < registerSize; ++j) {
+                printf("(register %d: [%d]) ",registers[j], snap4[j]);
+            }
+        }
+        if(me == 1){
+            struct timespec remaining2, request2 = { 0, 0.1 * (2 << 20) };
+                nanosleep(&request2, &remaining2);
+            while(!thread0Done){}
+            p_snapshot(&test5Snapshot, snap2, registers, registerSize);
+            printf("\nSnap 2: ");
+            for (int j = 0; j < registerSize; ++j) {
+                printf("(registru %d: [%d]) ",registers[j], snap2[j]);
+            }
+            struct timespec remaining22, request22 = { 0, 0.3 * (2 << 20) };
+                nanosleep(&request22, &remaining22);
+            p_snapshot(&test5Snapshot, snap3, registers, registerSize);
+            printf("\nSnap 3: ");
+            for (int j = 0; j < registerSize; ++j) {
+                printf("(registru %d: [%d]) ",registers[j], snap3[j]);
+            }
+            thread1Done = true;
+        }
+        if(me != 0 && me != 1){
+            for (int j = 0; j < 1000; ++j) {
+                update(&test5Snapshot, omp_get_thread_num(), j, omp_get_thread_num());
+            }
+        }
+    }
+    #pragma omp barrier
+    freePSnapshot(&test5Snapshot);
 
-//     for(int j = 0;j<reg_size_read_1;j++) {
-//     if(snap1[j] > snap4[j])
-//         assert(false);
-//     }
-//     for(int j = 0;j<reg_size_read_2;j++) {
-//     if(snap2[j] > snap3[j])
-//         assert(false);
-//     }
+    for(int j = 0;j<reg_size_read_1;j++) {
+    if(snap1[j] > snap4[j])
+        assert(false);
+    }
+    for(int j = 0;j<reg_size_read_2;j++) {
+    if(snap2[j] > snap3[j])
+        assert(false);
+    }
 
-// }
+}
 
-// printf("\nTest 5 passed.\n\n");
+printf("\nTest 5 passed.\n\n");
 
     return 0;
 }
