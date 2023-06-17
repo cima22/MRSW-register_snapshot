@@ -71,9 +71,12 @@ int main(){
         for (int j = 0; j < i; ++j) {
             printf("[%d] ",snap1[j]);
         }
-
-#pragma omp parallel default(none) shared(test2Snapshot) num_threads(i)
+        int maximum_threadNR = 0;
+#pragma omp parallel default(none) shared(test2Snapshot, maximum_threadNR) num_threads(i)
         {
+            // testing to see how many trhreads on a machine
+            // if(maximum_threadNR < omp_get_thread_num()){maximum_threadNR = omp_get_thread_num();printf(" %d\n", maximum_threadNR); }
+
             // long lastThreadStamp = 0;
             update(&test2Snapshot,omp_get_thread_num(),omp_get_thread_num(), omp_get_thread_num());
         }

@@ -85,6 +85,10 @@ int threadMoved(RegStampCollection* can_help_me){
 int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters){
     // printf("one thread got to p+snapshot!\n");
     int me = omp_get_thread_num();
+    
+    // if it has been allocated earlier with another size
+    if(snapshot->ANNOUNCE[me]!=NULL) free(snapshot->ANNOUNCE[me]);
+
     snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(atomic_int));
     snapshot->ANNOUNCE_SIZES[me] = numRegisters;
     if(snapshot->ANNOUNCE[me] == NULL){
@@ -153,13 +157,13 @@ void freePSnapshot(PSnapshot* snapshot){
         free(snapshot->HELPSNAP[i]);
     }
     free(snapshot->HELPSNAP);
-    for (int i = 0; i < snapshot->threadNum; ++i) {
+    for(int i = 0;i<snapshot->threadNum;i++)
         free(snapshot->ANNOUNCE[i]);
-    }
     free(snapshot->ANNOUNCE);
     for (int i = 0; i < snapshot->capacity; ++i) {
         free(snapshot->AS[i]);
     }
+    free(snapshot->ANNOUNCE_SIZES);
     free(snapshot->AS);
     free(snapshot->reg);
 }
@@ -220,8 +224,14 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
                 to_help[j] = true;
         }
     }
-    if (checkToHelpEmpty(to_help, threadNum))
+    if (checkToHelpEmpty(to_help, threadNum)) {
+            for(int i = 0;i<threadNum;i++) {
+            free(announce[i]);
+        }
+        free(announce);
+        free(readers);
         return EXIT_SUCCESS;
+    }
     // line 07 end
 
     // line 08
@@ -285,7 +295,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
                 }
             }
 
-        for(int j = 0;j<threadNum;j++) 
+        for(int j = 0;j<threadNum;j++)
             if(still_to_help[j] == true) {
                 int threadMovedId = threadMoved(&can_help[j]);
                 if(threadMovedId!=-1) {
@@ -308,7 +318,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
     }
             for(int i = 0;i<threadNum;i++) {
-            free(announce[i]);
+                free(announce[i]);
         }
         free(announce);
         free(readers);
