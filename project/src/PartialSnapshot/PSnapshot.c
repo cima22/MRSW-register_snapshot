@@ -85,7 +85,7 @@ int threadMoved(RegStampCollection* can_help_me){
 int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters){
     // printf("one thread got to p+snapshot!\n");
     int me = omp_get_thread_num();
-    snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(mrmwREG));
+    snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(atomic_int));
     snapshot->ANNOUNCE_SIZES[me] = numRegisters;
     if(snapshot->ANNOUNCE[me] == NULL){
         fprintf(stderr, "Memory allocation failed: ANNOUNCE[me] in p_snapshot()");
@@ -115,7 +115,7 @@ int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters
         if(areEqual){
             for (int i = 0; i < numRegisters; ++i) {
                 (snapshot->AS[registers[i]])[me] = false;
-                pSnap[i] = bb[i].value;
+                pSnap[i] = getValue(bb[i]);
             }
             return EXIT_SUCCESS;
         }
@@ -141,7 +141,7 @@ int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters
             freeRegStampCollection(&can_help_me);
             return EXIT_SUCCESS;
         }
-        memcpy(aa,bb,sizeof(bb));
+        memcpy(aa,bb,numRegisters * sizeof(mrmwREG));
     }
 }
 

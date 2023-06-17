@@ -52,7 +52,7 @@ int main() {
         int registerSet[] = {0, 1, 2}; // array containing 0-9
 
         int num_registers = sizeof(registerSet) / sizeof(registerSet[0]); 
-        int* pSnap = calloc(num_registers, sizeof(snap));
+        int* pSnap = calloc(num_registers, sizeof(int));
         if(pSnap == NULL){
             fprintf(stderr, "Memory allocation failed: pSnap in main()");
             exit(EXIT_FAILURE);
