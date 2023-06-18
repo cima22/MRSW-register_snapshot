@@ -155,7 +155,7 @@ int main(){
     The other threads updates their register with values from 0 to 1000.\n \
     * Assertion: the second scan must have greater values than the first scan, element-wise.\n");
 
-    for (int i = 4; i <= MAXTHRD; i *= 2) {
+    for (int i = 4; i <= MAXTHRD/2; i *= 2) {
         printf("\nTest 4 with %d threads.\n",i);
         PSnapshot test4Snapshot;
         if(createPSnapshot(&test4Snapshot,i,i,0) == EXIT_FAILURE){

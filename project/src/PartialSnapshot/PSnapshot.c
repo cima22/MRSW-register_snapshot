@@ -222,7 +222,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     activeSet readers = calloc(threadNum, sizeof(bool));
     memcpy(readers, snapshot->AS[r], sizeof(bool) * threadNum);
     int** announce = calloc(threadNum, sizeof(int*));
-    int* announceSizes = calloc(threadNum,sizeof(int));
+    
     if (announce == NULL) {
         fprintf(stderr, "Memory allocation failed: announce in update()");
         return EXIT_FAILURE;
@@ -234,6 +234,11 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
             fprintf(stderr, "Memory allocation failed: announce[%d] in update()", j);
             return EXIT_FAILURE;
         }
+    }
+    int* announceSizes = calloc(threadNum,sizeof(int));
+    if(announceSizes == NULL) {
+    fprintf(stderr, "Memory allocation failed: announceSizes in update()");
+    return EXIT_FAILURE;
     }
     // line 05 begin
     bool to_help[threadNum];
@@ -257,6 +262,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         }
         free(announce);
         free(readers);
+        free(announceSizes);
         return EXIT_SUCCESS;
     }
     // line 07 end
@@ -268,7 +274,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
     for(int j = 0;j<threadNum;j++) {
         for (int rr = 0;rr<announceSizes[j]; rr++) {
-            auto x  = announce[j][rr];
+            // auto x  = announce[j][rr];
             // printf("asta: %d   ", x);
             to_read[announce[j][rr]] = true;
         }
@@ -340,7 +346,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
         for(int j = 0;j<threadNum;j++) {
             for (int rr = 0;rr<announceSizes[j]; rr++) {
-                auto x = announce[j][rr];
+                // auto x = announce[j][rr];
                 // printf("asta:%d\n", x);
                 to_read[announce[j][rr]] = true;
                 
@@ -353,6 +359,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         }
         free(announce);
         free(readers);
+        free(announceSizes);
         for (int i = 0;i<threadNum;i++)
             freeRegStampCollection(&can_help[i]);
     return EXIT_SUCCESS;
