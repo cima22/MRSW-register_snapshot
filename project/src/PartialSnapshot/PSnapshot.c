@@ -4,6 +4,27 @@
 
 #include "PSnapshot.h"
 
+void printAnnounce(int** announce, int threadNum, int* announceSizes) {
+    for (int i = 0; i < threadNum; i++) {
+        // printf("Announce for thread %d: ", i);
+        for(int j = 0; j < announceSizes[i]; j++) {
+            // printf("%d ", announce[i][j]);
+            if(announce[i][j] >= 12) printf("BULITTT!!!!thread %d poz %d, val %d\n", i, j, announce[i][j]);
+        }
+        // printf("\n");
+    }
+}
+void printAtomicAnnounce(atomic_int** announce, int threadNum, int* announceSizes) {
+    for (int i = 0; i < threadNum; i++) {
+        // printf("Announce for thread %d: ", i);
+        for(int j = 0; j < announceSizes[i]; j++) {
+            if(atomic_load(&announce[i][j]) >= 12) printf("BULITTT!!!!thread %d poz %d, val %d\n", i, j, announce[i][j]);
+        }
+        // printf("\n");
+    }
+}
+
+
 int createRegStampCollection(RegStampCollection* collection){
     if(collection == NULL) {
         fprintf(stderr, "Register Stamp collection to create is null");
@@ -87,9 +108,8 @@ int p_snapshot(PSnapshot* snapshot, int* pSnap, int* registers, int numRegisters
     int me = omp_get_thread_num();
     
     // if it has been allocated earlier with another size
-    if(snapshot->ANNOUNCE[me]!=NULL) free(snapshot->ANNOUNCE[me]);
+    snapshot->ANNOUNCE[me] = realloc(snapshot->ANNOUNCE[me], numRegisters * sizeof(atomic_int));
 
-    snapshot->ANNOUNCE[me] = calloc(numRegisters, sizeof(atomic_int));
     snapshot->ANNOUNCE_SIZES[me] = numRegisters;
     if(snapshot->ANNOUNCE[me] == NULL){
         fprintf(stderr, "Memory allocation failed: ANNOUNCE[me] in p_snapshot()");
@@ -202,12 +222,14 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     activeSet readers = calloc(threadNum, sizeof(bool));
     memcpy(readers, snapshot->AS[r], sizeof(bool) * threadNum);
     int** announce = calloc(threadNum, sizeof(int*));
+    int* announceSizes = calloc(threadNum,sizeof(int));
     if (announce == NULL) {
         fprintf(stderr, "Memory allocation failed: announce in update()");
         return EXIT_FAILURE;
     }
     for (int j = 0;j<threadNum;j++) {
-        announce[j] = calloc(snapshot->ANNOUNCE_SIZES[j],sizeof(int));
+        announce[j] = calloc(snapshot->capacity,sizeof(int));
+        
         if(announce[j] == NULL) {
             fprintf(stderr, "Memory allocation failed: announce[%d] in update()", j);
             return EXIT_FAILURE;
@@ -216,14 +238,19 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     // line 05 begin
     bool to_help[threadNum];
     for(int i = 0;i<threadNum;i++) to_help[i] = false;
+    // printAtomicAnnounce(snapshot->ANNOUNCE,threadNum, snapshot->ANNOUNCE_SIZES);
+    // printAnnounce(announce,threadNum, snapshot->ANNOUNCE_SIZES);
 
     for(int j = 0;j<threadNum;j++) {
         if (readers[j] == true) {
             CopyAtomicInttoInt(announce[j], snapshot->ANNOUNCE[j], snapshot->ANNOUNCE_SIZES[j]);
-            if(isInAnnounce(announce[j],r,snapshot->ANNOUNCE_SIZES[j])) 
+            // announceSizes[j] = snapshot->ANNOUNCE_SIZES[j];
+            // for(int alt = 0;alt<)
+            if(isInAnnounce(announce[j],r,announceSizes[j]))
                 to_help[j] = true;
         }
     }
+    
     if (checkToHelpEmpty(to_help, threadNum)) {
             for(int i = 0;i<threadNum;i++) {
             free(announce[i]);
@@ -240,7 +267,9 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     for (int i = 0;i<capacity;i++) to_read[i] = false;
 
     for(int j = 0;j<threadNum;j++) {
-        for (int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j]; rr++) {
+        for (int rr = 0;rr<announceSizes[j]; rr++) {
+            auto x  = announce[j][rr];
+            // printf("asta: %d   ", x);
             to_read[announce[j][rr]] = true;
         }
     }
@@ -273,7 +302,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
                 for(int j = 0;j<threadNum;j++)
                     if(to_help[j] == true)
-                        if(isInAnnounce(announce[j], rr, snapshot->ANNOUNCE_SIZES[j])) {
+                        if(isInAnnounce(announce[j], rr, announceSizes[j])) {
                             still_to_help[j] = true;
                             int idx = can_help[j].size;
                             can_help[j].size = idx + 1;
@@ -289,8 +318,8 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
 
         for(int j = 0;j<threadNum; j++)
             if(to_help[j] == true && still_to_help[j] == false) {
-                snapshot->HELPSNAP[ThreadID][j] = calloc(snapshot->ANNOUNCE_SIZES[j],sizeof(atomic_int));
-                for(int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j];rr++) {
+                snapshot->HELPSNAP[ThreadID][j] = calloc(announceSizes[j],sizeof(atomic_int));
+                for(int rr = 0;rr<announceSizes[j];rr++) {
                     atomic_store(&(snapshot->HELPSNAP[ThreadID][j][rr]),bb[announce[j][rr]].value);
                 }
             }
@@ -310,7 +339,9 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         for(int j = 0;j<capacity;j++)to_read[j] = false;
 
         for(int j = 0;j<threadNum;j++) {
-            for (int rr = 0;rr<snapshot->ANNOUNCE_SIZES[j]; rr++) {
+            for (int rr = 0;rr<announceSizes[j]; rr++) {
+                auto x = announce[j][rr];
+                // printf("asta:%d\n", x);
                 to_read[announce[j][rr]] = true;
                 
             }
@@ -322,6 +353,8 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
         }
         free(announce);
         free(readers);
+        for (int i = 0;i<threadNum;i++)
+            freeRegStampCollection(&can_help[i]);
     return EXIT_SUCCESS;
 
     

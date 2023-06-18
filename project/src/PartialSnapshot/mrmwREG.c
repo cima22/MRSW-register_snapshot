@@ -42,6 +42,7 @@ int getSn(mrmwREG reg){
 void CopyAtomicInttoInt(int* vec1, atomic_int* vec2, int numOfElem) {
     for (int i = 0; i < numOfElem; i++) {
         vec1[i] = atomic_load(&vec2[i]);
+        // printf("int announce %d\n", vec1[i]);
     }
 }
 void CopyAtomicRegisters(atomic_int* destination, atomic_int* source, int numOfElem) {
