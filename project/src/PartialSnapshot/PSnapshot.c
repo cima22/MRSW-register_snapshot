@@ -244,7 +244,7 @@ int update(PSnapshot* snapshot,int r,int value,int ThreadID) {
     for(int j = 0;j<threadNum;j++) {
         if (readers[j] == true) {
             CopyAtomicInttoInt(announce[j], snapshot->ANNOUNCE[j], snapshot->ANNOUNCE_SIZES[j]);
-            // announceSizes[j] = snapshot->ANNOUNCE_SIZES[j];
+            announceSizes[j] = snapshot->ANNOUNCE_SIZES[j];
             // for(int alt = 0;alt<)
             if(isInAnnounce(announce[j],r,announceSizes[j]))
                 to_help[j] = true;

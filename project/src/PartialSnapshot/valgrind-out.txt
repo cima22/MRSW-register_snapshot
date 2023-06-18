@@ -1,0 +1,289 @@
+==27887== Memcheck, a memory error detector
+==27887== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==27887== Using Valgrind-3.21.0-d97fed7c3e-20230428 and LibVEX; rerun with -h for copyright info
+==27887== Command: ./TestPSnapshot
+==27887== Parent PID: 3985
+==27887== 
+--27887-- 
+--27887-- Valgrind options:
+--27887--    --leak-check=full
+--27887--    --show-leak-kinds=all
+--27887--    --track-origins=yes
+--27887--    --verbose
+--27887--    --log-file=valgrind-out.txt
+--27887-- Contents of /proc/version:
+--27887--   Linux version 5.19.0-45-generic (buildd@lcy02-amd64-117) (x86_64-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #46~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jun 7 15:06:04 UTC 20
+--27887-- 
+--27887-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--27887-- Page sizes: currently 4096, max supported 4096
+--27887-- Valgrind library directory: /usr/local/libexec/valgrind
+--27887-- Reading syms from /home/serb1231/Desktop/MRSW-register_snapshot/project/src/PartialSnapshot/TestPSnapshot
+--27887-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--27887--   Considering /usr/lib/debug/.build-id/61/ef896a699bb1c2e4e231642b2e1688b2f1a61e.debug ..
+--27887--   .. build-id is valid
+--27887-- Reading syms from /usr/local/libexec/valgrind/memcheck-amd64-linux
+--27887--    object doesn't have a dynamic symbol table
+--27887-- Scheduler: using generic scheduler lock implementation.
+--27887-- Reading suppressions file: /usr/local/libexec/valgrind/default.supp
+==27887== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-27887-by-serb1231-on-???
+==27887== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-27887-by-serb1231-on-???
+==27887== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-27887-by-serb1231-on-???
+==27887== 
+==27887== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==27887== don't want to do, unless you know exactly what you're doing,
+==27887== or are doing some strange experiment):
+==27887==   /usr/local/libexec/valgrind/../../bin/vgdb --pid=27887 ...command...
+==27887== 
+==27887== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==27887==   /path/to/gdb ./TestPSnapshot
+==27887== and then give GDB the following command
+==27887==   target remote | /usr/local/libexec/valgrind/../../bin/vgdb --pid=27887
+==27887== --pid is optional if only one valgrind process is running
+==27887== 
+--27887-- REDIR: 0x402aa60 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c1d82 (vgPlain_amd64_linux_REDIR_FOR_strlen)
+--27887-- REDIR: 0x402a830 (ld-linux-x86-64.so.2:index) redirected to 0x580c1d9c (vgPlain_amd64_linux_REDIR_FOR_index)
+--27887-- Reading syms from /usr/local/libexec/valgrind/vgpreload_core-amd64-linux.so
+--27887-- Reading syms from /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+==27887== WARNING: new redirection conflicts with existing -- ignoring it
+--27887--     old: 0x0402aa60 (strlen              ) R-> (0000.0) 0x580c1d82 vgPlain_amd64_linux_REDIR_FOR_strlen
+--27887--     new: 0x0402aa60 (strlen              ) R-> (2007.0) 0x0484ed40 strlen
+--27887-- REDIR: 0x4027240 (ld-linux-x86-64.so.2:strcmp) redirected to 0x484fca0 (strcmp)
+--27887-- REDIR: 0x402afc0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4853810 (mempcpy)
+--27887-- Reading syms from /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+--27887--    object doesn't have a symbol table
+--27887-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--27887--   Considering /usr/lib/debug/.build-id/69/389d485a9793dbe873f0ea2c93e02efaa9aa3d.debug ..
+--27887--   .. build-id is valid
+==27887== WARNING: new redirection conflicts with existing -- ignoring it
+--27887--     old: 0x0495dce0 (memalign            ) R-> (1011.0) 0x0484dbba memalign
+--27887--     new: 0x0495dce0 (memalign            ) R-> (1017.0) 0x0484e0ae aligned_alloc
+==27887== WARNING: new redirection conflicts with existing -- ignoring it
+--27887--     old: 0x0495dce0 (memalign            ) R-> (1011.0) 0x0484dbba memalign
+--27887--     new: 0x0495dce0 (memalign            ) R-> (1017.0) 0x0484e038 aligned_alloc
+==27887== WARNING: new redirection conflicts with existing -- ignoring it
+--27887--     old: 0x0495dce0 (memalign            ) R-> (1011.0) 0x0484dbba memalign
+--27887--     new: 0x0495dce0 (memalign            ) R-> (1017.0) 0x0484e0ae aligned_alloc
+==27887== WARNING: new redirection conflicts with existing -- ignoring it
+--27887--     old: 0x0495dce0 (memalign            ) R-> (1011.0) 0x0484dbba memalign
+--27887--     new: 0x0495dce0 (memalign            ) R-> (1017.0) 0x0484e038 aligned_alloc
+--27887-- REDIR: 0x49607a0 (libc.so.6:strnlen) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960a60 (libc.so.6:strpbrk) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960360 (libc.so.6:strcmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497ed50 (libc.so.6:wcsnlen) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961750 (libc.so.6:memset) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497d5c0 (libc.so.6:wcslen) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961c90 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497d3f0 (libc.so.6:wcschr) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49602e0 (libc.so.6:index) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49609e0 (libc.so.6:rindex) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961620 (libc.so.6:memmove) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+==27887== Preferring higher priority redirection:
+--27887--     old: 0x04a58940 (__memcpy_avx_unalign) R-> (2018.0) 0x04850f60 __memcpy_avx_unaligned_erms
+--27887--     new: 0x04a58940 (__memcpy_avx_unalign) R-> (2018.1) 0x04852850 memmove
+--27887-- REDIR: 0x497d470 (libc.so.6:wcscmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961a60 (libc.so.6:stpncpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497da30 (libc.so.6:wmemchr) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49608b0 (libc.so.6:strncmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961af0 (libc.so.6:strcasecmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49604a0 (libc.so.6:strcspn) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497d4f0 (libc.so.6:wcscpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960250 (libc.so.6:strcat) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961be0 (libc.so.6:strncasecmp_l) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961500 (libc.so.6:bcmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49695f0 (libc.so.6:memrchr) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4963090 (libc.so.6:strchrnul) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960410 (libc.so.6:strcpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961b90 (libc.so.6:strcasecmp_l) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960720 (libc.so.6:strlen) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960950 (libc.so.6:strncpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x497dac0 (libc.so.6:wmemcmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x49619d0 (libc.so.6:stpcpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961470 (libc.so.6:memchr) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4960b80 (libc.so.6:strspn) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961850 (libc.so.6:mempcpy) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4961b40 (libc.so.6:strncasecmp) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4963000 (libc.so.6:rawmemchr) redirected to 0x483f1ba (_vgnU_ifunc_wrapper)
+--27887-- REDIR: 0x4a55790 (libc.so.6:__strrchr_avx2) redirected to 0x484e720 (rindex)
+--27887-- REDIR: 0x4a55960 (libc.so.6:__strlen_avx2) redirected to 0x484ec20 (strlen)
+--27887-- REDIR: 0x495d120 (libc.so.6:malloc) redirected to 0x4848799 (malloc)
+--27887-- REDIR: 0x495d460 (libc.so.6:free) redirected to 0x484b21a (free)
+--27887-- REDIR: 0x4a59100 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852740 (memset)
+--27887-- REDIR: 0x495e5a0 (libc.so.6:calloc) redirected to 0x484d782 (calloc)
+--27887-- REDIR: 0x495d7c0 (libc.so.6:realloc) redirected to 0x484d99c (realloc)
+--27887-- REDIR: 0x4a55580 (libc.so.6:__strchrnul_avx2) redirected to 0x4853300 (strchrnul)
+--27887-- REDIR: 0x4a58900 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853410 (mempcpy)
+--27887-- REDIR: 0x4a58940 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x4852850 (memmove)
+--27887-- REDIR: 0x495dce0 (libc.so.6:memalign) redirected to 0x484dbba (memalign)
+--27887-- REDIR: 0x4a51c00 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x4851fe0 (bcmp)
+==27887== 
+==27887== Process terminating with default action of signal 2 (SIGINT)
+==27887==    at 0x10D41F: main._omp_fn.2 (TestPSnapshot.c:194)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== HEAP SUMMARY:
+==27887==     in use at exit: 22,007,880 bytes in 150,161 blocks
+==27887==   total heap usage: 5,950,626 allocs, 5,800,465 frees, 1,253,319,028 bytes allocated
+==27887== 
+==27887== Searching for pointers to 150,161 not-freed blocks
+==27887== Checked 58,827,336 bytes
+==27887== 
+==27887== 8 bytes in 1 blocks are still reachable in loss record 1 of 21
+==27887==    at 0x484880F: malloc (vg_replace_malloc.c:431)
+==27887==    by 0x487B84C: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x488E04A: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x4879FE1: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x400647D: call_init.part.0 (dl-init.c:70)
+==27887==    by 0x4006567: call_init (dl-init.c:33)
+==27887==    by 0x4006567: _dl_init (dl-init.c:117)
+==27887==    by 0x40202E9: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+==27887== 
+==27887== 8 bytes in 1 blocks are definitely lost in loss record 2 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10BE0F: main (TestPSnapshot.c:28)
+==27887== 
+==27887== 32 bytes in 1 blocks are still reachable in loss record 3 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109AE2: createPSnapshot (PSnapshot.c:47)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 64 bytes in 1 blocks are still reachable in loss record 4 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109BE0: createPSnapshot (PSnapshot.c:65)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 64 bytes in 1 blocks are still reachable in loss record 5 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109C77: createPSnapshot (PSnapshot.c:73)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 64 bytes in 1 blocks are still reachable in loss record 6 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109CCE: createPSnapshot (PSnapshot.c:78)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 64 bytes in 8 blocks are still reachable in loss record 7 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109C56: createPSnapshot (PSnapshot.c:71)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 96 bytes in 1 blocks are still reachable in loss record 8 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109B41: createPSnapshot (PSnapshot.c:51)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 192 bytes in 1 blocks are still reachable in loss record 9 of 21
+==27887==    at 0x484880F: malloc (vg_replace_malloc.c:431)
+==27887==    by 0x487B84C: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x488BD9B: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x48829F9: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10C478: main (TestPSnapshot.c:75)
+==27887== 
+==27887== 256 bytes in 1 blocks are still reachable in loss record 10 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D27D: main._omp_fn.1 (TestPSnapshot.c:129)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== 256 bytes in 1 blocks are possibly lost in loss record 11 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D27D: main._omp_fn.1 (TestPSnapshot.c:129)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== 504 bytes in 6 blocks are definitely lost in loss record 12 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D1DE: main._omp_fn.0 (TestPSnapshot.c:81)
+==27887==    by 0x4882A15: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10C478: main (TestPSnapshot.c:75)
+==27887== 
+==27887== 512 bytes in 8 blocks are still reachable in loss record 13 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x109D44: createPSnapshot (PSnapshot.c:84)
+==27887==    by 0x10CB05: main (TestPSnapshot.c:161)
+==27887== 
+==27887== 520 bytes in 1 blocks are still reachable in loss record 14 of 21
+==27887==    at 0x484DA20: realloc (vg_replace_malloc.c:1649)
+==27887==    by 0x487B8AC: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x488CACC: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x4882A10: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10C478: main (TestPSnapshot.c:75)
+==27887== 
+==27887== 864 bytes in 3 blocks are possibly lost in loss record 15 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x40147D9: calloc (rtld-malloc.h:44)
+==27887==    by 0x40147D9: allocate_dtv (dl-tls.c:375)
+==27887==    by 0x40147D9: _dl_allocate_tls (dl-tls.c:634)
+==27887==    by 0x494D834: allocate_stack (allocatestack.c:430)
+==27887==    by 0x494D834: pthread_create@@GLIBC_2.34 (pthread_create.c:647)
+==27887==    by 0x488C1EF: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x4882A10: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10C928: main (TestPSnapshot.c:115)
+==27887== 
+==27887== 1,024 bytes in 1 blocks are still reachable in loss record 16 of 21
+==27887==    at 0x484880F: malloc (vg_replace_malloc.c:431)
+==27887==    by 0x4936C23: _IO_file_doallocate (filedoalloc.c:101)
+==27887==    by 0x4945D5F: _IO_doallocbuf (genops.c:347)
+==27887==    by 0x4944FDF: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+==27887==    by 0x4943754: _IO_new_file_xsputn (fileops.c:1243)
+==27887==    by 0x4943754: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+==27887==    by 0x4938F9B: puts (ioputs.c:40)
+==27887==    by 0x10BD44: main (TestPSnapshot.c:12)
+==27887== 
+==27887== 1,152 bytes in 4 blocks are possibly lost in loss record 17 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x40147D9: calloc (rtld-malloc.h:44)
+==27887==    by 0x40147D9: allocate_dtv (dl-tls.c:375)
+==27887==    by 0x40147D9: _dl_allocate_tls (dl-tls.c:634)
+==27887==    by 0x494D834: allocate_stack (allocatestack.c:430)
+==27887==    by 0x494D834: pthread_create@@GLIBC_2.34 (pthread_create.c:647)
+==27887==    by 0x488C1EF: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x4882A10: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10C478: main (TestPSnapshot.c:75)
+==27887== 
+==27887== 5,376 bytes in 2 blocks are still reachable in loss record 18 of 21
+==27887==    at 0x484DC59: memalign (vg_replace_malloc.c:1835)
+==27887==    by 0x487B8E8: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x488BC26: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x48829F9: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x10CFE0: main (TestPSnapshot.c:174)
+==27887== 
+==27887== 21,336 bytes in 120 blocks are definitely lost in loss record 19 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D1DE: main._omp_fn.0 (TestPSnapshot.c:81)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== 640,000 bytes in 30,000 blocks are definitely lost in loss record 20 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D414: main._omp_fn.2 (TestPSnapshot.c:211)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== 21,335,488 bytes in 119,998 blocks are definitely lost in loss record 21 of 21
+==27887==    at 0x484D80C: calloc (vg_replace_malloc.c:1554)
+==27887==    by 0x10AAA7: update (PSnapshot.c:225)
+==27887==    by 0x10D27D: main._omp_fn.1 (TestPSnapshot.c:129)
+==27887==    by 0x488BB9D: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==27887==    by 0x494CB42: start_thread (pthread_create.c:442)
+==27887==    by 0x49DDBB3: clone (clone.S:100)
+==27887== 
+==27887== LEAK SUMMARY:
+==27887==    definitely lost: 21,997,336 bytes in 150,125 blocks
+==27887==    indirectly lost: 0 bytes in 0 blocks
+==27887==      possibly lost: 2,272 bytes in 8 blocks
+==27887==    still reachable: 8,272 bytes in 28 blocks
+==27887==         suppressed: 0 bytes in 0 blocks
+==27887== 
+==27887== ERROR SUMMARY: 8 errors from 8 contexts (suppressed: 0 from 0)
