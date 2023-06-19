@@ -7,26 +7,13 @@
 // #include "WFSnapshot.h"
 #include "PSnapshot.h"
 
-/* These structs should to match the definition in benchmark.py
- */
-
-/*
-struct bench_result {
-    float read_time;
-    float write_time;
-    float min_write_time;
-    float max_write_time;
-    float min_read_time;
-    float max_read_time;
-};
-*/
 struct bench_result {
     float scan_throughput;
     float update_throughput;
     float mult_update_throughput;
     float mixed_throughput;
     float avg_indep_scan_latency;
-    float avg_conc_scan_latency;
+    float avg_mixed_latency;
     float avg_update_latency;
     float avg_mult_update_latency;
 };
@@ -97,7 +84,7 @@ double scan_bench(PSnapshot* benchSnapshot, int t) {
     //printf("Thread %d started scanning.\n", tid);
     int registers[t];
     for(int i = 0;i<t;i++)registers[i] = i;
-    #pragma omp barrier
+    // #pragma omp barrier
 
     double first = omp_get_wtime();
     p_snapshot(benchSnapshot,snap,registers , t);
@@ -188,6 +175,33 @@ struct bench_result small_bench(int t) {
     time_taken = toc - tic;
     result.scan_throughput = t / time_taken;
     result.avg_indep_scan_latency = computeAverage(timeArray2,t);
+
+    // --------------------- Mixed section ---------------------
+
+    tic = omp_get_wtime();
+    double timeArray4[t];
+    len = t/2;
+    tic = omp_get_wtime();
+
+    #pragma omp parallel default(none) shared(benchSnapshot, t, timeArray4, len)
+	{
+            int tid = omp_get_thread_num();
+            if(tid>=len) {
+                for(int i = 0;i<100000;i++) {
+                    update_bench(&benchSnapshot, tid);
+                }
+            }
+            else {
+                timeArray4[tid] = scan_bench(&benchSnapshot,t);
+            }
+    }
+
+    toc = omp_get_wtime();
+    time_taken = toc - tic;
+    result.mixed_throughput =  (100001*len) / time_taken;
+    result.avg_mixed_latency = computeAverage(timeArray4,t);
+
+    #pragma omp barrier
    
     printf("Tests for %d threads:\n", t);
     printf(" * update thr = %f \n", result.update_throughput);
@@ -196,6 +210,8 @@ struct bench_result small_bench(int t) {
     printf(" * Mult_update latency = %f \n", result.avg_mult_update_latency);
     printf(" * scan thr = %f \n", result.scan_throughput);
     printf(" * scan latency = %f\n", result.avg_indep_scan_latency);
+    printf(" * mixed thr = %f \n", result.mixed_throughput);
+    printf(" * mixed latency = %f\n", result.avg_mixed_latency);
 
     return result;
 }
@@ -204,6 +220,8 @@ struct bench_result small_bench(int t) {
  * testing.
  */
 int main(int argc, char * argv[]) {
+    double tic, toc;
+    tic = omp_get_wtime();
     (void) argc;
     (void) argv;
     small_bench(1);
@@ -213,5 +231,7 @@ int main(int argc, char * argv[]) {
     small_bench(16);
     small_bench(32);
     small_bench(64);
+    toc = omp_get_wtime();
+    printf("\nTime taken: %f\n", toc - tic);
 
 }
