@@ -1,18 +1,19 @@
-NAME = library
+NAME = snapshotTest
 
 CC ?= gcc
 RM ?= @rm
 MKDIR ?= @mkdir
 
-CFLAGS := -O3 -Wall -Wextra -fopenmp
+CFLAGS := -O3 -Wall -g -Wextra -fopenmp
 
 SRC_DIR = src
 BUILD_DIR = build
 DATA_DIR = data
 INCLUDES = inc
 
-OBJECTS = $(NAME).o
-
+#OBJECTS = $(NAME).o
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ)/%.o,$(SRCS))
 
 all: $(BUILD_DIR) $(NAME) $(NAME).so
 	@echo "Built $(NAME)"

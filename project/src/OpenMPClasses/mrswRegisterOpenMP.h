@@ -4,20 +4,20 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <sys/syscall.h>
 #include "stampedValue.h"
-#include "srswRegisterOpenMP.h"  // Note that this should be a header file, not a .c file
+#include "srswRegisterOpenMP.h"
 #include <omp.h>
 
 typedef struct {
     AtomicSRSWRegister** a_table;
-    int sizeOfTable;
+    int capacity;
 } AtomicMRSWRegister;
 
 void createAtomicMRSWRegister(AtomicMRSWRegister* reg, int init,  int readers);
-int readMRSW(AtomicMRSWRegister* reg);
+StampedValue readMRSW(AtomicMRSWRegister* reg);
 void writeMRSW(AtomicMRSWRegister* reg, long *ThreadLastStamp,int v);
-void CopyContentMRSWRegister(AtomicMRSWRegister* x, AtomicMRSWRegister* y);
+int CopyContentMRSWRegister(AtomicMRSWRegister* x, AtomicMRSWRegister* y);
 int MaxMRSW(AtomicMRSWRegister* reg, AtomicSRSWRegister* returnedReg);
+void freeAtomicMRSWRegister(AtomicMRSWRegister* reg);
 
 #endif  // MRSW_REGISTER_H

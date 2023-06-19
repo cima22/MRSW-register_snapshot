@@ -7,13 +7,13 @@ CC = gcc
 CFLAGS  = -g -Wall -fopenmp
 
 # the build target executables:
-TARGET1 = TestUpdate
+TARGET1 = TestLinerizability
 TARGET2 = TestPSnapshot
 
 all: $(TARGET1) $(TARGET2)
 
-$(TARGET1): mrmwREG.o PSnapshot.o TestUpdate.o
-	$(CC) $(CFLAGS) -o $(TARGET1) mrmwREG.o PSnapshot.o TestUpdate.o
+$(TARGET1): mrmwREG.o PSnapshot.o TestLinerizability.o
+	$(CC) $(CFLAGS) -o $(TARGET1) mrmwREG.o PSnapshot.o TestLinerizability.o
 
 $(TARGET2): mrmwREG.o PSnapshot.o TestPSnapshot.o
 	$(CC) $(CFLAGS) -o $(TARGET2) mrmwREG.o PSnapshot.o TestPSnapshot.o
@@ -24,8 +24,8 @@ mrmwREG.o: mrmwREG.c mrmwREG.h
 PSnapshot.o: PSnapshot.c PSnapshot.h
 	$(CC) $(CFLAGS) -c PSnapshot.c
 
-TestUpdate.o: TestUpdate.c mrmwREG.h PSnapshot.h
-	$(CC) $(CFLAGS) -c TestUpdate.c
+TestLinerizability.o: TestLinerizability.c mrmwREG.h PSnapshot.h
+	$(CC) $(CFLAGS) -c TestLinerizability.c
 
 TestPSnapshot.o: TestPSnapshot.c mrmwREG.h PSnapshot.h
 	$(CC) $(CFLAGS) -c TestPSnapshot.c

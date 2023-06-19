@@ -2,19 +2,16 @@ import ctypes
 import os
 import datetime
 
-class cBenchCounters(ctypes.Structure):
-    '''
-    This has to match the returned struct in library.c
-    '''
-    _fields_ = [ ("failed_turns", ctypes.c_int),
-                 ("successful_lends", ctypes.c_int) ]
-
 class cBenchResult(ctypes.Structure):
     '''
     This has to match the returned struct in library.c
     '''
-    _fields_ = [ ("time", ctypes.c_float),
-                 ("counters", cBenchCounters) ]
+    _fields_ = [ ("total_read_time", ctypes.c_float),
+                 ("total_write_time", ctypes.c_float),
+                 ("min_write_time", ctypes.c_float),
+                 ("max_write_time", ctypes.c_float),
+                 ("min_read_time", ctypes.c_float),
+                 ("max_read_time", ctypes.c_float) ]
 
 class Benchmark:
     '''
@@ -48,7 +45,7 @@ class Benchmark:
         for x in self.xrange:
             tmp = []
             for r in range(0, self.repetitions_per_point):
-                result = self.bench_function( x, *self.parameters ).time*1000
+                result = self.bench_function(x).max_read_time*1000
                 tmp.append( result )
             self.data[x] = tmp
 
@@ -75,13 +72,13 @@ def benchmark():
     Requires the binary to also be present as a shared library.
     '''
     basedir = os.path.dirname(os.path.abspath(__file__))
-    binary = ctypes.CDLL( f"{basedir}/library.so" )
+    binary = ctypes.CDLL( f"{basedir}/snapshotBench.so" )
     # Set the result type for each benchmark function
     binary.small_bench.restype = cBenchResult
 
     # The number of threads. This is the x-axis in the benchmark, i.e., the
     # parameter that is 'sweeped' over.
-    num_threads = [1,2,4,8,16]#,32,64,128,256]
+    num_threads = [1,2,4,8,16,32,64]
 
     # Parameters for the benchmark are passed in a tuple, here (1000,). To pass
     # just one parameter, we cannot write (1000) because that would not parse

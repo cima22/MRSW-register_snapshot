@@ -9,21 +9,20 @@
 #include <string.h>
 #include <unistd.h>
 
-// the actual register
 typedef struct {
-    StampedValue* r_value;
-} AtomicSRSWRegister;
+    long stamp;
+    StampedValue r_value;
+} StampedStampedValue;
 
-// the thread specific data
 typedef struct {
     long lastStamp;
-    StampedValue* lastRead;
-} ThreadSpecificSRSW;
+    StampedStampedValue lastRead;
+    StampedStampedValue r_value;
+} AtomicSRSWRegister;
 
 void createAtomicSRSWRegister(AtomicSRSWRegister* reg, int init);
-int readSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread);
-void writeSRSW(AtomicSRSWRegister* reg, ThreadSpecificSRSW* curentThread, int v);
-void createAtomicSRSWThreadSpecific(ThreadSpecificSRSW* curentThread, StampedValue* r_value);
-void CopyContentSRSWRegister(AtomicSRSWRegister* x, AtomicSRSWRegister* y);
-
+StampedValue readSRSW(AtomicSRSWRegister* reg);
+void writeSRSW(AtomicSRSWRegister* reg, StampedValue v);
+int CopyContentSRSWRegister(AtomicSRSWRegister* x, AtomicSRSWRegister* y);
+int max(StampedStampedValue* x, StampedStampedValue* y, StampedStampedValue* result);
 #endif  // SRSW_REGISTER_OPENMP_H
