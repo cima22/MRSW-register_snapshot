@@ -1,0 +1,211 @@
+Test 1: Snapshot object made for one thread, initialized with 1 as init value for register
+      * Assertion 1: thread scans 1 
+      * Assertion 2: thread scans 2 after calling update(2)
+
+First scan returns: [1]
+Second scan returns: [2]
+
+Test 1 passed.
+
+Test 2: Snapshot made for 2,4,8,16,32,64 threads, initialized with value 1 in the registers.
+      * Assertion 1: a scan performed after the initialization returns an array of 1s
+      * Assertion 2: Every thread writes its id in its register. A susequent scan returns an arrays with the threadIDs
+
+Test 2 with 2 threads.
+First scan returns: [1] [1] 
+Second scan returns: [0] [1] 
+Test 2 with 2 threads has passed.
+
+Test 2 with 4 threads.
+First scan returns: [1] [1] [1] [1] 
+Second scan returns: [0] [1] [2] [3] 
+Test 2 with 4 threads has passed.
+
+Test 2 with 8 threads.
+First scan returns: [1] [1] [1] [1] [1] [1] [1] [1] 
+Second scan returns: [0] [1] [2] [3] [4] [5] [6] [7] 
+Test 2 with 8 threads has passed.
+
+Test 2 with 16 threads.
+First scan returns: [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] 
+Second scan returns: [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] 
+Test 2 with 16 threads has passed.
+
+Test 2 with 32 threads.
+First scan returns: [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] 
+Second scan returns: [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] 
+Test 2 with 32 threads has passed.
+
+Test 2 with 64 threads.
+First scan returns: [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] [1] 
+Second scan returns: [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34] [35] [36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48] [49] [50] [51] [52] [53] [54] [55] [56] [57] [58] [59] [60] [61] [62] [63] 
+Test 2 with 64 threads has passed.
+
+Test 2 passed.
+
+Test 3: Snapshot made for 2,4,8,16,32,64 threads. Thread 0 scans, sleeps for 10 milliseconds, scans again;
+      the other threads updates their register with values from 0 to 1000.
+      * Assertion: the second scan must have greater values than the first scan, element-wise.
+
+Test 3 with 2 threads.
+Snap 1: [0] [999] 
+Snap 2: [0] [999] 
+Test 3 with 2 threads has passed.
+
+Test 3 with 4 threads.
+Snap 1: [0] [999] [999] [999] 
+Snap 2: [0] [999] [999] [999] 
+Test 3 with 4 threads has passed.
+
+Test 3 with 8 threads.
+Snap 1: [0] [999] [999] [999] [999] [999] [999] [999] 
+Snap 2: [0] [999] [999] [999] [999] [999] [999] [999] 
+Test 3 with 8 threads has passed.
+
+Test 3 with 16 threads.
+Snap 1: [0] [999] [999] [999] [999] [999] [999] [999] [67] [48] [286] [60] [58] [39] [51] [54] 
+Snap 2: [0] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] 
+Test 3 with 16 threads has passed.
+
+Test 3 with 32 threads.
+Snap 1: [0] [491] [498] [493] [480] [488] [486] [488] [488] [422] [474] [482] [479] [472] [0] [478] [0] [0] [0] [0] [0] [0] [0] [0] [485] [0] [0] [0] [0] [0] [0] [0] 
+Snap 2: [0] [999] [999] [999] [999] [999] [487] [999] [999] [999] [999] [999] [999] [999] [371] [999] [365] [391] [316] [366] [342] [332] [351] [326] [992] [432] [339] [309] [336] [473] [233] [978] 
+Test 3 with 32 threads has passed.
+
+Test 3 with 64 threads.
+Snap 1: [0] [921] [999] [923] [999] [999] [286] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [345] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [302] [310] [999] [317] [753] [305] [752] [999] [999] [288] [999] [999] [305] [301] [303] [300] [293] [299] [286] [308] [0] [244] [305] [297] [279] [999] [291] [307] [296] 
+Snap 2: [0] [999] [999] [999] [999] [999] [909] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [971] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [999] [922] [934] [999] [318] [754] [928] [753] [999] [999] [910] [999] [999] [925] [924] [304] [922] [294] [300] [894] [927] [471] [862] [922] [298] [280] [999] [913] [926] [917] 
+Test 3 with 64 threads has passed.
+
+Test 3 passed.
+
+Test 4: Snapshot made for 4,8,12,..,64 threads. 
+     Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again;
+     The other threads updates their register with values from 0 to 1000.
+     * Assertion: the second scan must have greater values than the first scan, element-wise.
+
+Test 4 with 4 threads.
+Snap 1: [0] [0] [0] [0] 
+Snap 2: [0] [0] [0] [110] 
+Snap 3: [0] [0] [9999] [9999] 
+Snap 4: [0] [0] [9999] [9999] 
+Test 4 with 8 threads.
+Snap 1: [0] [0] [0] [0] [0] [0] [0] [0] 
+Snap 2: [0] [0] [3] [0] [1] [0] [0] [0] 
+Snap 3: [0] [0] [9999] [9999] [6491] [9999] [9999] [9999] 
+Snap 4: [0] [0] [9999] [9999] [6496] [9999] [9999] [9999] 
+Test 4 with 16 threads.
+Snap 1: [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] 
+Snap 2: [0] [0] [0] [2] [7] [2] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] 
+Snap 3: [0] [0] [8130] [8019] [8097] [7705] [6329] [6712] [8624] [8243] [7722] [0] [0] [2102] [4674] [4910] 
+Snap 4: [0] [0] [8140] [8027] [8107] [7714] [6329] [6721] [8634] [8254] [7730] [0] [0] [2111] [4681] [4918] 
+Test 4 with 32 threads.
+Snap 1: [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] 
+Snap 2: [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [1] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [1] [0] [0] [0] [0] 
+Snap 3: [0] [0] [3131] [0] [0] [5334] [5384] [0] [0] [0] [3115] [1] [0] [5318] [0] [5428] [0] [0] [3032] [2360] [5407] [2349] [3337] [3379] [3385] [2370] [0] [1] [0] [0] [0] [0] 
+Snap 4: [0] [0] [3131] [0] [0] [5334] [5392] [0] [0] [0] [3115] [1] [0] [5318] [0] [5437] [0] [0] [3032] [2370] [5416] [2349] [3344] [3385] [3392] [2371] [0] [1] [0] [0] [0] [0] 
+Test 4 passed.
+
+Test 5: Snapshot made for 4,8,12,..,64 threads with randomly sized and valued registers.
+ Thread 0 scans, thread 1 scans, sleeps for 10 milliseconds, scans again, finally thread 0 scans again.
+ Both threads scan a random number of registers, and the scanned registers are random 
+ * Assertion: the second scan must have greater values than the first scan, element-wise.
+
+Test 5 with 4 threads.
+
+Snap 1: (register 2: [37]) (register 3: [325]) 
+Snap 2: (registru 2: [819]) 
+Snap 3: (registru 2: [999]) 
+Snap 4: (register 2: [999]) (register 3: [999]) 
+Test 5 with 8 threads.
+
+Snap 1: (register 4: [196]) (register 6: [175]) (register 2: [195]) (register 4: [196]) 
+Snap 2: (registru 6: [683]) (registru 2: [710]) 
+Snap 3: (registru 6: [999]) (registru 2: [999]) 
+Snap 4: (register 4: [999]) (register 6: [999]) (register 2: [999]) (register 4: [999]) 
+Test 5 with 12 threads.
+
+Snap 1: (register 7: [133]) (register 5: [118]) (register 6: [126]) (register 11: [149]) (register 7: [133]) (register 11: [149]) (register 2: [126]) (register 3: [144]) (register 9: [143]) 
+Snap 2: (registru 4: [999]) (registru 2: [999]) (registru 10: [164]) (registru 6: [999]) 
+Snap 3: (registru 4: [999]) (registru 2: [999]) (registru 10: [753]) (registru 6: [999]) 
+Snap 4: (register 7: [874]) (register 5: [999]) (register 6: [999]) (register 11: [999]) (register 7: [874]) (register 11: [999]) (register 2: [999]) (register 3: [999]) (register 9: [999]) 
+Test 5 with 16 threads.
+
+Snap 1: (register 6: [0]) (register 7: [160]) (register 11: [151]) (register 14: [5]) (register 13: [0]) (register 15: [117]) (register 3: [124]) (register 6: [0]) (register 7: [160]) (register 9: [155]) 
+Snap 2: (registru 2: [505]) (registru 9: [510]) (registru 4: [0]) (registru 12: [481]) (registru 5: [471]) (registru 7: [506]) (registru 9: [510]) 
+Snap 3: (registru 2: [824]) (registru 9: [839]) (registru 4: [44]) (registru 12: [817]) (registru 5: [774]) (registru 7: [823]) (registru 9: [839]) 
+Snap 4: (register 6: [310]) (register 7: [828]) (register 11: [841]) (register 14: [5]) (register 13: [0]) (register 15: [454]) (register 3: [812]) (register 6: [310]) (register 7: [828]) (register 9: [846]) 
+Test 5 with 20 threads.
+
+Snap 1: (register 12: [0]) (register 8: [95]) (register 15: [105]) (register 7: [104]) (register 10: [102]) (register 6: [86]) (register 3: [119]) (register 11: [108]) (register 4: [83]) (register 16: [124]) (register 2: [84]) (register 8: [95]) (register 18: [102]) 
+Snap 2: (registru 16: [406]) (registru 4: [83]) (registru 19: [4]) 
+Snap 3: (registru 16: [674]) (registru 4: [83]) (registru 19: [4]) 
+Snap 4: (register 12: [0]) (register 8: [650]) (register 15: [661]) (register 7: [105]) (register 10: [652]) (register 6: [359]) (register 3: [119]) (register 11: [647]) (register 4: [83]) (register 16: [677]) (register 2: [630]) (register 8: [650]) (register 18: [651]) 
+Test 5 with 24 threads.
+
+Snap 1: (register 6: [49]) (register 11: [85]) (register 12: [61]) 
+Snap 2: (registru 12: [272]) (registru 18: [278]) (registru 19: [293]) (registru 17: [0]) (registru 13: [304]) (registru 4: [265]) (registru 14: [0]) (registru 8: [299]) (registru 15: [301]) (registru 22: [255]) (registru 12: [272]) (registru 6: [49]) (registru 16: [288]) (registru 5: [245]) (registru 13: [304]) 
+Snap 3: (registru 12: [273]) (registru 18: [493]) (registru 19: [515]) (registru 17: [0]) (registru 13: [526]) (registru 4: [481]) (registru 14: [0]) (registru 8: [516]) (registru 15: [525]) (registru 22: [470]) (registru 12: [273]) (registru 6: [256]) (registru 16: [510]) (registru 5: [430]) (registru 13: [526]) 
+Snap 4: (register 6: [256]) (register 11: [539]) (register 12: [273]) 
+Test 5 with 28 threads.
+
+Snap 1: (register 20: [160]) (register 14: [0]) (register 8: [133]) (register 6: [139]) (register 21: [0]) (register 16: [129]) (register 18: [82]) (register 6: [139]) (register 3: [87]) (register 5: [87]) (register 12: [0]) (register 16: [129]) (register 11: [80]) (register 24: [74]) (register 26: [94]) (register 13: [81]) (register 23: [144]) (register 25: [148]) (register 7: [0]) 
+Snap 2: (registru 20: [372]) (registru 24: [74]) (registru 10: [352]) (registru 22: [341]) (registru 23: [145]) (registru 2: [379]) (registru 27: [324]) (registru 14: [0]) (registru 5: [294]) (registru 4: [332]) (registru 12: [0]) (registru 26: [303]) (registru 27: [324]) (registru 13: [288]) (registru 15: [315]) (registru 17: [0]) (registru 18: [82]) (registru 19: [324]) (registru 4: [332]) 
+Snap 3: (registru 20: [372]) (registru 24: [74]) (registru 10: [574]) (registru 22: [341]) (registru 23: [145]) (registru 2: [379]) (registru 27: [325]) (registru 14: [0]) (registru 5: [295]) (registru 4: [332]) (registru 12: [184]) (registru 26: [303]) (registru 27: [325]) (registru 13: [288]) (registru 15: [315]) (registru 17: [0]) (registru 18: [82]) (registru 19: [542]) (registru 4: [332]) 
+Snap 4: (register 20: [372]) (register 14: [0]) (register 8: [133]) (register 6: [563]) (register 21: [0]) (register 16: [604]) (register 18: [82]) (register 6: [563]) (register 3: [546]) (register 5: [295]) (register 12: [184]) (register 16: [604]) (register 11: [546]) (register 24: [74]) (register 26: [303]) (register 13: [288]) (register 23: [145]) (register 25: [607]) (register 7: [196]) 
+Test 5 with 32 threads.
+
+Snap 1: (register 31: [94]) (register 18: [96]) (register 3: [69]) (register 16: [0]) (register 9: [0]) (register 2: [55]) (register 27: [4]) (register 10: [70]) (register 28: [0]) (register 19: [0]) (register 20: [95]) (register 22: [52]) (register 24: [50]) (register 17: [0]) (register 2: [55]) (register 11: [52]) (register 25: [108]) (register 3: [69]) (register 12: [92]) (register 14: [98]) (register 3: [69]) (register 22: [52]) (register 21: [69]) (register 5: [88]) (register 9: [0]) (register 26: [1]) 
+Snap 2: (registru 8: [288]) (registru 20: [95]) (registru 4: [262]) (registru 29: [261]) (registru 6: [296]) (registru 26: [151]) (registru 2: [55]) 
+Snap 3: (registru 8: [448]) (registru 20: [95]) (registru 4: [423]) (registru 29: [426]) (registru 6: [456]) (registru 26: [303]) (registru 2: [55]) 
+Snap 4: (register 31: [438]) (register 18: [449]) (register 3: [69]) (register 16: [0]) (register 9: [0]) (register 2: [55]) (register 27: [161]) (register 10: [378]) (register 28: [0]) (register 19: [0]) (register 20: [95]) (register 22: [390]) (register 24: [208]) (register 17: [0]) (register 2: [55]) (register 11: [393]) (register 25: [456]) (register 3: [69]) (register 12: [92]) (register 14: [433]) (register 3: [69]) (register 22: [390]) (register 21: [379]) (register 5: [402]) (register 9: [0]) (register 26: [309]) 
+Test 5 with 36 threads.
+
+Snap 1: (register 22: [25]) (register 5: [53]) (register 20: [83]) (register 15: [24]) (register 28: [71]) (register 9: [23]) (register 17: [23]) (register 33: [12]) (register 28: [71]) (register 2: [60]) (register 25: [107]) (register 13: [68]) (register 21: [21]) (register 11: [32]) (register 9: [23]) (register 35: [30]) (register 21: [21]) 
+Snap 2: (registru 16: [241]) (registru 34: [236]) (registru 3: [239]) (registru 13: [203]) (registru 27: [0]) (registru 19: [102]) (registru 4: [305]) (registru 6: [283]) (registru 9: [161]) 
+Snap 3: (registru 16: [378]) (registru 34: [374]) (registru 3: [372]) (registru 13: [338]) (registru 27: [120]) (registru 19: [232]) (registru 4: [439]) (registru 6: [404]) (registru 9: [296]) 
+Snap 4: (register 22: [25]) (register 5: [54]) (register 20: [359]) (register 15: [305]) (register 28: [71]) (register 9: [298]) (register 17: [23]) (register 33: [259]) (register 28: [71]) (register 2: [336]) (register 25: [107]) (register 13: [340]) (register 21: [21]) (register 11: [32]) (register 9: [298]) (register 35: [30]) (register 21: [21]) 
+Test 5 with 40 threads.
+
+Snap 1: (register 15: [0]) (register 23: [31]) (register 26: [10]) (register 7: [23]) (register 22: [0]) (register 31: [39]) (register 34: [20]) 
+Snap 2: (registru 34: [136]) (registru 20: [142]) (registru 22: [0]) (registru 25: [126]) (registru 17: [129]) (registru 19: [168]) (registru 33: [191]) (registru 13: [117]) (registru 5: [162]) (registru 18: [30]) (registru 8: [134]) (registru 16: [168]) (registru 9: [137]) (registru 28: [214]) (registru 36: [184]) (registru 20: [142]) (registru 26: [11]) (registru 35: [211]) (registru 37: [228]) (registru 14: [160]) (registru 11: [168]) (registru 17: [129]) (registru 37: [228]) (registru 7: [138]) (registru 21: [148]) (registru 23: [146]) (registru 9: [137]) (registru 4: [0]) (registru 2: [131]) 
+Snap 3: (registru 34: [137]) (registru 20: [268]) (registru 22: [113]) (registru 25: [127]) (registru 17: [253]) (registru 19: [168]) (registru 33: [315]) (registru 13: [118]) (registru 5: [163]) (registru 18: [135]) (registru 8: [135]) (registru 16: [297]) (registru 9: [268]) (registru 28: [342]) (registru 36: [185]) (registru 20: [268]) (registru 26: [11]) (registru 35: [341]) (registru 37: [229]) (registru 14: [161]) (registru 11: [169]) (registru 17: [253]) (registru 37: [229]) (registru 7: [139]) (registru 21: [149]) (registru 23: [273]) (registru 9: [268]) (registru 4: [0]) (registru 2: [132]) 
+Snap 4: (register 15: [0]) (register 23: [274]) (register 26: [11]) (register 7: [139]) (register 22: [119]) (register 31: [308]) (register 34: [137]) 
+Test 5 with 44 threads.
+
+Snap 1: (register 7: [58]) (register 43: [0]) (register 25: [93]) (register 37: [120]) (register 20: [86]) (register 38: [18]) (register 32: [57]) (register 22: [86]) (register 23: [124]) (register 14: [52]) (register 24: [101]) (register 12: [112]) (register 9: [0]) (register 41: [32]) (register 29: [19]) (register 34: [60]) (register 21: [0]) (register 13: [40]) (register 16: [56]) (register 31: [112]) (register 33: [79]) (register 42: [53]) (register 27: [29]) (register 26: [97]) (register 35: [53]) 
+Snap 2: (registru 26: [97]) (registru 32: [183]) (registru 12: [112]) (registru 24: [102]) (registru 19: [243]) (registru 7: [58]) (registru 9: [0]) (registru 15: [0]) 
+Snap 3: (registru 26: [97]) (registru 32: [305]) (registru 12: [112]) (registru 24: [102]) (registru 19: [364]) (registru 7: [58]) (registru 9: [0]) (registru 15: [0]) 
+Snap 4: (register 7: [58]) (register 43: [0]) (register 25: [93]) (register 37: [120]) (register 20: [86]) (register 38: [18]) (register 32: [307]) (register 22: [86]) (register 23: [375]) (register 14: [52]) (register 24: [102]) (register 12: [112]) (register 9: [0]) (register 41: [33]) (register 29: [130]) (register 34: [60]) (register 21: [0]) (register 13: [40]) (register 16: [57]) (register 31: [112]) (register 33: [79]) (register 42: [53]) (register 27: [143]) (register 26: [97]) (register 35: [53]) 
+Test 5 with 48 threads.
+
+Snap 1: (register 2: [3]) (register 32: [0]) (register 13: [38]) (register 38: [64]) (register 6: [0]) (register 25: [6]) (register 21: [1]) (register 17: [9]) (register 23: [2]) (register 46: [104]) (register 35: [0]) (register 29: [1]) (register 34: [84]) (register 40: [1]) (register 33: [11]) (register 11: [43]) 
+Snap 2: (registru 42: [999]) (registru 7: [999]) (registru 13: [999]) (registru 33: [11]) (registru 12: [768]) (registru 19: [999]) (registru 14: [999]) (registru 23: [2]) (registru 27: [999]) (registru 46: [105]) (registru 24: [999]) (registru 29: [1]) (registru 2: [940]) (registru 9: [999]) (registru 26: [983]) (registru 10: [999]) (registru 8: [990]) (registru 30: [990]) (registru 40: [1]) (registru 5: [980]) (registru 20: [999]) (registru 46: [105]) (registru 19: [999]) (registru 31: [960]) (registru 22: [942]) (registru 24: [999]) (registru 26: [983]) (registru 4: [990]) (registru 28: [0]) (registru 44: [999]) (registru 32: [0]) (registru 21: [1]) (registru 25: [6]) (registru 45: [999]) (registru 6: [0]) (registru 41: [984]) (registru 7: [999]) (registru 17: [9]) 
+Snap 3: (registru 42: [999]) (registru 7: [999]) (registru 13: [999]) (registru 33: [11]) (registru 12: [899]) (registru 19: [999]) (registru 14: [999]) (registru 23: [2]) (registru 27: [999]) (registru 46: [105]) (registru 24: [999]) (registru 29: [1]) (registru 2: [941]) (registru 9: [999]) (registru 26: [999]) (registru 10: [999]) (registru 8: [999]) (registru 30: [999]) (registru 40: [1]) (registru 5: [999]) (registru 20: [999]) (registru 46: [105]) (registru 19: [999]) (registru 31: [999]) (registru 22: [999]) (registru 24: [999]) (registru 26: [999]) (registru 4: [999]) (registru 28: [89]) (registru 44: [999]) (registru 32: [0]) (registru 21: [1]) (registru 25: [6]) (registru 45: [999]) (registru 6: [0]) (registru 41: [999]) (registru 7: [999]) (registru 17: [9]) 
+Snap 4: (register 2: [941]) (register 32: [0]) (register 13: [999]) (register 38: [64]) (register 6: [0]) (register 25: [6]) (register 21: [1]) (register 17: [9]) (register 23: [2]) (register 46: [105]) (register 35: [740]) (register 29: [1]) (register 34: [84]) (register 40: [1]) (register 33: [11]) (register 11: [999]) 
+Test 5 with 52 threads.
+
+Snap 1: (register 16: [999]) (register 11: [934]) (register 27: [999]) (register 20: [999]) (register 48: [999]) (register 5: [999]) (register 18: [631]) (register 43: [999]) (register 31: [931]) (register 50: [930]) (register 7: [943]) (register 35: [0]) (register 22: [935]) (register 47: [932]) (register 2: [4]) (register 19: [999]) (register 23: [894]) 
+Snap 2: (registru 31: [999]) (registru 50: [999]) (registru 19: [999]) (registru 44: [999]) (registru 13: [999]) (registru 12: [999]) (registru 48: [999]) (registru 10: [125]) (registru 5: [999]) (registru 17: [999]) (registru 35: [92]) (registru 11: [999]) (registru 24: [999]) (registru 20: [999]) (registru 26: [979]) (registru 22: [999]) (registru 41: [999]) (registru 36: [999]) (registru 39: [999]) (registru 27: [999]) (registru 2: [115]) (registru 25: [999]) (registru 14: [999]) (registru 28: [999]) (registru 21: [999]) (registru 4: [999]) (registru 37: [999]) (registru 42: [90]) (registru 20: [999]) 
+Snap 3: (registru 31: [999]) (registru 50: [999]) (registru 19: [999]) (registru 44: [999]) (registru 13: [999]) (registru 12: [999]) (registru 48: [999]) (registru 10: [247]) (registru 5: [999]) (registru 17: [999]) (registru 35: [215]) (registru 11: [999]) (registru 24: [999]) (registru 20: [999]) (registru 26: [999]) (registru 22: [999]) (registru 41: [999]) (registru 36: [999]) (registru 39: [999]) (registru 27: [999]) (registru 2: [238]) (registru 25: [999]) (registru 14: [999]) (registru 28: [999]) (registru 21: [999]) (registru 4: [999]) (registru 37: [999]) (registru 42: [108]) (registru 20: [999]) 
+Snap 4: (register 16: [999]) (register 11: [999]) (register 27: [999]) (register 20: [999]) (register 48: [999]) (register 5: [999]) (register 18: [874]) (register 43: [999]) (register 31: [999]) (register 50: [999]) (register 7: [999]) (register 35: [220]) (register 22: [999]) (register 47: [999]) (register 2: [243]) (register 19: [999]) (register 23: [999]) 
+Test 5 with 56 threads.
+
+Snap 1: (register 10: [117]) (register 3: [0]) (register 52: [1]) (register 35: [80]) (register 32: [14]) (register 41: [0]) (register 53: [0]) (register 36: [0]) (register 43: [49]) (register 44: [0]) (register 48: [0]) (register 19: [59]) (register 30: [0]) (register 31: [22]) (register 4: [50]) (register 10: [117]) (register 51: [90]) (register 46: [85]) (register 14: [35]) (register 42: [54]) (register 52: [1]) (register 15: [18]) 
+Snap 2: (registru 9: [999]) (registru 17: [970]) (registru 23: [0]) (registru 41: [40]) (registru 46: [999]) (registru 38: [927]) (registru 54: [3]) (registru 13: [2]) 
+Snap 3: (registru 9: [999]) (registru 17: [999]) (registru 23: [101]) (registru 41: [142]) (registru 46: [999]) (registru 38: [999]) (registru 54: [104]) (registru 13: [105]) 
+Snap 4: (register 10: [999]) (register 3: [999]) (register 52: [999]) (register 35: [999]) (register 32: [999]) (register 41: [143]) (register 53: [999]) (register 36: [999]) (register 43: [999]) (register 44: [999]) (register 48: [999]) (register 19: [999]) (register 30: [999]) (register 31: [999]) (register 4: [999]) (register 10: [999]) (register 51: [999]) (register 46: [999]) (register 14: [999]) (register 42: [999]) (register 52: [999]) (register 15: [999]) 
+Test 5 with 60 threads.
+
+Snap 1: (register 2: [889]) (register 29: [46]) (register 36: [17]) (register 6: [999]) (register 14: [999]) (register 20: [985]) (register 24: [931]) (register 19: [999]) (register 16: [999]) (register 39: [63]) (register 13: [999]) (register 21: [999]) (register 5: [948]) (register 55: [933]) (register 11: [950]) (register 10: [999]) (register 40: [965]) (register 49: [974]) (register 14: [999]) (register 58: [999]) (register 22: [999]) (register 32: [999]) (register 47: [963]) (register 15: [999]) (register 52: [953]) (register 37: [982]) (register 2: [889]) (register 38: [932]) (register 19: [999]) (register 26: [97]) (register 25: [995]) (register 54: [999]) (register 58: [999]) (register 41: [920]) (register 53: [999]) (register 6: [999]) (register 51: [999]) 
+Snap 2: (registru 3: [999]) (registru 39: [63]) (registru 12: [999]) (registru 2: [989]) (registru 43: [999]) (registru 32: [999]) (registru 15: [999]) (registru 53: [999]) (registru 49: [975]) (registru 23: [999]) (registru 25: [995]) (registru 57: [999]) (registru 27: [999]) (registru 29: [46]) (registru 30: [999]) (registru 9: [999]) (registru 52: [954]) (registru 42: [999]) (registru 26: [97]) (registru 59: [999]) (registru 6: [999]) (registru 11: [951]) (registru 34: [999]) (registru 36: [18]) (registru 38: [932]) (registru 3: [999]) (registru 44: [999]) (registru 8: [999]) (registru 20: [985]) (registru 56: [999]) (registru 21: [999]) (registru 17: [210]) (registru 19: [999]) (registru 10: [999]) (registru 7: [999]) (registru 22: [999]) (registru 48: [999]) (registru 41: [921]) (registru 33: [999]) (registru 31: [999]) (registru 45: [999]) (registru 16: [999]) (registru 40: [966]) (registru 34: [999]) (registru 14: [999]) (registru 43: [999]) (registru 21: [999]) (registru 49: [975]) (registru 53: [999]) (registru 28: [168]) (registru 50: [999]) (registru 36: [18]) (registru 5: [948]) 
+Snap 3: (registru 3: [999]) (registru 39: [63]) (registru 12: [999]) (registru 2: [999]) (registru 43: [999]) (registru 32: [999]) (registru 15: [999]) (registru 53: [999]) (registru 49: [975]) (registru 23: [999]) (registru 25: [995]) (registru 57: [999]) (registru 27: [999]) (registru 29: [46]) (registru 30: [999]) (registru 9: [999]) (registru 52: [954]) (registru 42: [999]) (registru 26: [97]) (registru 59: [999]) (registru 6: [999]) (registru 11: [951]) (registru 34: [999]) (registru 36: [131]) (registru 38: [932]) (registru 3: [999]) (registru 44: [999]) (registru 8: [999]) (registru 20: [985]) (registru 56: [999]) (registru 21: [999]) (registru 17: [324]) (registru 19: [999]) (registru 10: [999]) (registru 7: [999]) (registru 22: [999]) (registru 48: [999]) (registru 41: [999]) (registru 33: [999]) (registru 31: [999]) (registru 45: [999]) (registru 16: [999]) (registru 40: [966]) (registru 34: [999]) (registru 14: [999]) (registru 43: [999]) (registru 21: [999]) (registru 49: [975]) (registru 53: [999]) (registru 28: [282]) (registru 50: [999]) (registru 36: [131]) (registru 5: [948]) 
+Snap 4: (register 2: [999]) (register 29: [46]) (register 36: [139]) (register 6: [999]) (register 14: [999]) (register 20: [985]) (register 24: [999]) (register 19: [999]) (register 16: [999]) (register 39: [63]) (register 13: [999]) (register 21: [999]) (register 5: [948]) (register 55: [933]) (register 11: [951]) (register 10: [999]) (register 40: [966]) (register 49: [975]) (register 14: [999]) (register 58: [999]) (register 22: [999]) (register 32: [999]) (register 47: [964]) (register 15: [999]) (register 52: [954]) (register 37: [999]) (register 2: [999]) (register 38: [932]) (register 19: [999]) (register 26: [97]) (register 25: [995]) (register 54: [999]) (register 58: [999]) (register 41: [999]) (register 53: [999]) (register 6: [999]) (register 51: [999]) 
+Test 5 with 64 threads.
+
+Snap 1: (register 60: [127]) (register 51: [0]) (register 32: [0]) (register 58: [69]) (register 40: [78]) (register 14: [15]) (register 56: [0]) (register 26: [0]) (register 4: [125]) (register 8: [43]) (register 34: [102]) (register 3: [37]) (register 39: [8]) (register 63: [0]) (register 54: [65]) (register 36: [9]) (register 22: [46]) (register 49: [0]) (register 32: [0]) 
+Snap 2: (registru 63: [25]) (registru 18: [999]) (registru 45: [0]) (registru 24: [980]) (registru 44: [946]) (registru 9: [999]) (registru 46: [999]) (registru 26: [931]) (registru 41: [910]) (registru 7: [999]) (registru 36: [9]) (registru 23: [0]) (registru 48: [969]) (registru 39: [950]) (registru 16: [0]) 
+Snap 3: (registru 63: [121]) (registru 18: [999]) (registru 45: [86]) (registru 24: [981]) (registru 44: [946]) (registru 9: [999]) (registru 46: [999]) (registru 26: [999]) (registru 41: [999]) (registru 7: [999]) (registru 36: [9]) (registru 23: [84]) (registru 48: [999]) (registru 39: [999]) (registru 16: [49]) 
+Snap 4: (register 60: [999]) (register 51: [107]) (register 32: [999]) (register 58: [999]) (register 40: [999]) (register 14: [16]) (register 56: [999]) (register 26: [999]) (register 4: [999]) (register 8: [999]) (register 34: [999]) (register 3: [38]) (register 39: [999]) (register 63: [125]) (register 54: [66]) (register 36: [9]) (register 22: [47]) (register 49: [962]) (register 32: [999]) 
+Test 5 passed.
+

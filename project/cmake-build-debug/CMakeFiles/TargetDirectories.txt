@@ -1,3 +1,0 @@
-/Users/Kambiz_1/Desktop/TUW/BA6/Mularch/Projects/project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/Kambiz_1/Desktop/TUW/BA6/Mularch/Projects/project/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/Kambiz_1/Desktop/TUW/BA6/Mularch/Projects/project/cmake-build-debug/CMakeFiles/project.dir
