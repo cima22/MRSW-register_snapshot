@@ -1,7 +1,7 @@
 NAME_WF = WFSnapshot/snapshotBench
 NAME_P = PSnapshot/snapshotBench
 
-CC ?= gcc
+CC = gcc
 RM ?= @rm
 MKDIR ?= @mkdir
 
